@@ -1,0 +1,21 @@
+{
+  "name": "cmru",
+  "version": "1.0.0",
+  "description": "cmru is a handy way to save and run project-specific commands in javascript.",
+  "keywords": [],
+  "author": "sigoden <sigoden@gmail.com>",
+  "license": "MIT",
+  "main": "index.js",
+  "files": [
+    "index.js"
+  ],
+  "directories": {
+    "example": "examples"
+  },
+ "engines": {
+    "node": ">= 16.0.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}
