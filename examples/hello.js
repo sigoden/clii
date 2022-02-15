@@ -4,5 +4,5 @@
  * hello is reciept's name
  */
 export function hello() {
-  console.log("Hello world")
+  console.log("Hello world");
 }

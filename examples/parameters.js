@@ -2,18 +2,18 @@
 
 /**
  * command parameter
- * @param {string} pattern 
+ * @param {string} pattern
  */
 export function filter(pattern) {
-  console.log(pattern)
+  console.log(pattern);
 }
 
 /**
- * command parameter with default value 
- * @param {string} address 
+ * command parameter with default value
+ * @param {string} address
  */
 export function email(address = "master@example.com") {
-  console.log(address)
+  console.log(address);
 }
 
 /**
@@ -21,8 +21,7 @@ export function email(address = "master@example.com") {
  * @param {string[]} files
  */
 export function backup(files) {
-  console.log(`scp ${files.join(" ")} me@example.com`)
-
+  console.log(`scp ${files.join(" ")} me@example.com`);
 }
 
 /**
@@ -31,5 +30,5 @@ export function backup(files) {
  * @param {string[]} flags
  */
 export function commit(messgae, flags) {
-  console.log(`git commit ${flags.join(" ")} ${messgae}`)
+  console.log(`git commit ${flags.join(" ")} ${messgae}`);
 }

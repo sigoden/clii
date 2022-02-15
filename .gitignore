@@ -1,8 +1,8 @@
 node_modules
 dist
 *.log
-package-lock.json
 
+.parcel-cache
 yarn.lock
 .vscode
 tmp

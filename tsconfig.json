@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "outDir": "./dist",
+    "baseUrl": "./src",
+    "target": "ESNext",
+    "module": "nodenext",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+  },
+  "include": ["src/**/*", "scripts/**/*"],
+  "exclude": ["node_modules", "**/*.spec.ts"]
+}
