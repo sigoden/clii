@@ -136,7 +136,7 @@ export const $ = <$>function (pieces: TemplateStringsArray, ...args: any[]) {
   return promise;
 };
 $.shell = which.sync("bash");
-$.prefix = "set -euo pipefail";
+$.prefix = "set -euo pipefail;";
 $.quote = quote;
 
 export function cd(path: string) {

@@ -2,7 +2,8 @@
 
 dotenv();
 
-export function main() {
-  console.log(process.env.FOO);
-  console.log(process.env.BAR);
+// default command
+export default async function () {
+  await $`echo ${process.env.FOO}`;
+  await $`echo ${process.env.BAR}`;
 }

@@ -10,7 +10,7 @@ export function filter(pattern) {
 
 /**
  * command parameter with default value
- * @param {string} address
+ * @param {string} [address]
  */
 export function email(address = "master@example.com") {
   console.log(address);

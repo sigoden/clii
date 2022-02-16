@@ -1,10 +1,16 @@
 #!/usr/bin/env cmru -f
 
-setvar("ver", "0.1.0", "Binary version");
+setvar("str", "0.1.0", "String variable");
+setvar("bool", false, "Boolean variable");
+setvar("num", 3, "Number variable");
+setvar("arr", [], "Array variable");
 
 /**
- * Override variables from cli with --ver
+ * Override variables with cli options
  */
 export function test() {
-  console.log(getvar("ver"));
+  console.log("str:", getvar("str"));
+  console.log("bool:", getvar("bool"));
+  console.log("num:", getvar("num"));
+  console.log("arr:", getvar("arr"));
 }

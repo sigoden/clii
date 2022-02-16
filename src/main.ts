@@ -17,8 +17,13 @@ async function main() {
   registerGlobals();
   const defaultArgv = yargs(hideBinArgv).parseSync();
   const script = await loadScript(defaultArgv);
-  if (script.main && !defaultArgv._[0] && !defaultArgv.h && !defaultArgv.help) {
-    hideBinArgv.push("main");
+  if (
+    script.defaultCmd &&
+    !defaultArgv._[0] &&
+    !defaultArgv.h &&
+    !defaultArgv.help
+  ) {
+    hideBinArgv.push("default");
   }
   let app = yargs(hideBinArgv)
     .usage("Usage: $0 <cmd> [options]")
@@ -39,9 +44,9 @@ async function main() {
       type: "string",
       description: "Specific working directory",
     })
-    .option("verbose", {
+    .option("quiet", {
       type: "boolean",
-      description: "Echo commands",
+      description: "Don't echo command",
     })
     .implies("workdir", "file");
   for (const [key, { value, description }] of vars.entries()) {
@@ -86,7 +91,7 @@ async function main() {
       },
       async (argv) => {
         try {
-          $.verbose = !!argv["verbose"];
+          $.verbose = !argv["quiet"];
           for (const [key, { value, description }] of vars.entries()) {
             vars.set(key, { description, value: argv[key] || value });
           }
@@ -111,7 +116,7 @@ main();
 
 interface Script {
   receipts: Receipt[];
-  main?: boolean;
+  defaultCmd?: boolean;
   error?: any;
 }
 
@@ -135,7 +140,7 @@ interface ReceiptParam {
 
 async function loadScript(argv: Record<string, any>): Promise<Script> {
   const receipts: Receipt[] = [];
-  let main = false;
+  let defaultCmd = false;
   try {
     const { file, workdir } = await findScript(argv);
     cd(workdir);
@@ -144,13 +149,17 @@ async function loadScript(argv: Record<string, any>): Promise<Script> {
     const __filename = pathResolve(file);
     const __dirname = dirname(__filename);
     const require = createRequire(file);
-    Object.assign(global, { __filename, __dirname, require });
+    Object.assign(global, { __filename, __dirname, require, argv });
     const ast = parseAst(source, {
       sourceType: "module",
     });
     for (const statement of ast.program.body) {
       const { leadingComments } = statement;
-      if (statement.type !== "ExportNamedDeclaration") continue;
+      if (
+        statement.type !== "ExportNamedDeclaration" &&
+        statement.type !== "ExportDefaultDeclaration"
+      )
+        continue;
       let name: string;
       let description = "";
       let params: ReceiptParam[] = [];
@@ -173,25 +182,32 @@ async function loadScript(argv: Record<string, any>): Promise<Script> {
       }
       const declaration = statement.declaration;
       if (declaration.type === "FunctionDeclaration") {
-        name = declaration.id.name;
+        if (declaration.id) {
+          name = declaration.id.name;
+        } else {
+          if (statement.type === "ExportDefaultDeclaration") {
+            name = "default";
+          }
+        }
       } else if (declaration.type === "VariableDeclaration") {
         const declaration2 = declaration.declarations[0];
         if (declaration2.type === "VariableDeclarator") {
           name = (declaration2.id as any).name;
         }
       }
-      if (modules[name]) {
-        if (name === "main") main = true;
+      const fn = modules[name];
+      if (fn && typeof fn === "function") {
+        if (name === "default") defaultCmd = true;
         receipts.push({
           name,
           description,
           params,
-          fn: modules[name],
+          fn,
         });
       }
     }
     return {
-      main,
+      defaultCmd,
       receipts,
     };
   } catch (err) {
