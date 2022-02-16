@@ -1,22 +1,25 @@
 #!/usr/bin/env node
 
 import yargs from "yargs";
-import { resolve } from "path";
+import { resolve as pathResolve, dirname } from "path";
+import { createRequire } from "module";
 import { hideBin } from "yargs/helpers";
-import { explainSync } from "jsdoc-api";
-import { readFile } from "fs/promises";
-import { registerGlobals, vars, $ } from "./index.js";
+import { parse as parseAst } from "@babel/parser";
+import { parse as parseComment } from "comment-parser";
+import { readFile, stat as fileStat } from "fs/promises";
+import { registerGlobals, vars, $, cd } from "./index";
 
 const hideBinArgv = hideBin(process.argv);
+
+const DEFAULT_FILE = "cmru.js";
 
 async function main() {
   registerGlobals();
   const defaultArgv = yargs(hideBinArgv).parseSync();
-  const script = await loadScript(
-    resolve(
-      (defaultArgv.file as string) ?? (defaultArgv.f as string) ?? "cmru.js"
-    )
-  );
+  const script = await loadScript(defaultArgv);
+  if (script.main && !defaultArgv._[0] && !defaultArgv.h && !defaultArgv.help) {
+    hideBinArgv.push("main");
+  }
   let app = yargs(hideBinArgv)
     .usage("Usage: $0 <cmd> [options]")
     .help()
@@ -28,13 +31,19 @@ async function main() {
     .option("file", {
       alias: "f",
       type: "string",
-      default: "cmru.js",
+      default: DEFAULT_FILE,
       description: "Specific cmru file",
+    })
+    .option("workdir", {
+      alias: "w",
+      type: "string",
+      description: "Specific working directory",
     })
     .option("verbose", {
       type: "boolean",
       description: "Echo commands",
-    });
+    })
+    .implies("workdir", "file");
   for (const [key, { value, description }] of vars.entries()) {
     let type: "array" | "number" | "string" | "boolean";
     if (Array.isArray(value)) {
@@ -55,10 +64,11 @@ async function main() {
   for (const receipt of script.receipts) {
     let cmd = `${receipt.name}`;
     for (const param of receipt.params) {
+      const [b, e] = param.optional ? ["[", "]"] : ["<", ">"];
       if (param.type.endsWith("[]")) {
-        cmd += ` <${param.name}...>`;
+        cmd += ` ${b}${param.name}...${e}`;
       } else {
-        cmd += ` <${param.name}>`;
+        cmd += ` ${b}${param.name}${e}`;
       }
     }
     app = app.command(
@@ -75,29 +85,34 @@ async function main() {
         return yargs;
       },
       async (argv) => {
-        $.verbose = !!argv["verbose"];
-
-        for (const [key, { value, description }] of vars.entries()) {
-          vars.set(key, { description, value: argv[key] || value });
+        try {
+          $.verbose = !!argv["verbose"];
+          for (const [key, { value, description }] of vars.entries()) {
+            vars.set(key, { description, value: argv[key] || value });
+          }
+          const args = receipt.params.map((param) => argv[param.name]);
+          await receipt.fn(...args);
+        } catch (err) {
+          console.log(err);
         }
-        const args = receipt.params.map((param) => argv[param.name]);
-        await receipt.fn(...args);
       }
     );
   }
-  if (!script.error) {
-    app = app.demandCommand();
-  } else {
+  if (script.error) {
     console.log(await app.getHelp());
     console.log("\n" + script.error);
+  } else {
+    app = app.demandCommand();
   }
   app.argv;
 }
 
 main();
+
 interface Script {
   receipts: Receipt[];
-  error?: string;
+  main?: boolean;
+  error?: any;
 }
 
 interface Receipt {
@@ -115,53 +130,112 @@ interface ReceiptParam {
   name: string;
   description: string;
   type: string;
-  properties: string;
+  optional: boolean;
 }
 
-async function loadScript(file: string): Promise<Script> {
+async function loadScript(argv: Record<string, any>): Promise<Script> {
+  const receipts: Receipt[] = [];
+  let main = false;
   try {
+    const { file, workdir } = await findScript(argv);
+    cd(workdir);
     const source = await readFile(file, "utf-8");
     const modules = await import(file);
-    const jsdocValues = explainSync({ source });
-    const receipts: Receipt[] = [];
-    for (const name of Object.keys(modules)) {
-      const fn = modules[name];
-      if (typeof fn === "function") {
-        const docValue = jsdocValues.find(
-          ({ scope, kind, comment, name: fnName }) =>
-            scope === "global" &&
-            kind === "function" &&
-            !!comment &&
-            fnName === name
-        );
-        const description = docValue?.description || "";
-        const params =
-          docValue?.params?.map(({ name, description, type }) => ({
-            name,
-            description,
-            type: getParamType(type.names[0]),
-          })) || [];
+    const __filename = pathResolve(file);
+    const __dirname = dirname(__filename);
+    const require = createRequire(file);
+    Object.assign(global, { __filename, __dirname, require });
+    const ast = parseAst(source, {
+      sourceType: "module",
+    });
+    for (const statement of ast.program.body) {
+      const { leadingComments } = statement;
+      if (statement.type !== "ExportNamedDeclaration") continue;
+      let name: string;
+      let description = "";
+      let params: ReceiptParam[] = [];
+      const comment = leadingComments
+        ? leadingComments[statement.leadingComments.length - 1]
+        : null;
+      if (comment) {
+        if (comment.type === "CommentLine") {
+          description = comment.value;
+        } else if (comment.type === "CommentBlock") {
+          const block = parseComment(`/*${comment.value}*/`)[0];
+          description = block.description;
+          params = block.tags
+            .filter((v) => v.tag === "param")
+            .map((v) => {
+              const { name, type, description, optional } = v;
+              return { name, type, description, optional };
+            });
+        }
+      }
+      const declaration = statement.declaration;
+      if (declaration.type === "FunctionDeclaration") {
+        name = declaration.id.name;
+      } else if (declaration.type === "VariableDeclaration") {
+        const declaration2 = declaration.declarations[0];
+        if (declaration2.type === "VariableDeclarator") {
+          name = (declaration2.id as any).name;
+        }
+      }
+      if (modules[name]) {
+        if (name === "main") main = true;
         receipts.push({
           name,
           description,
-          fn,
           params,
+          fn: modules[name],
         });
       }
     }
     return {
+      main,
       receipts,
     };
   } catch (err) {
     return {
-      receipts: [],
-      error: err.message,
+      receipts,
+      error: err,
     };
   }
 }
 
-function getParamType(type: string) {
-  const exe = /Array.\<(\w+)\>/.exec(type);
-  if (exe) return exe[1] + "[]";
-  return type;
+async function findScript(argv: Record<string, any>) {
+  const argFile: string = argv.file || argv.f;
+  const checkFiles = [];
+  if (argFile) {
+    checkFiles.push(pathResolve(argFile));
+  } else {
+    let dir = process.cwd();
+    while (true) {
+      checkFiles.push(pathResolve(dir, DEFAULT_FILE));
+      const parentDir = dirname(dir);
+      if (parentDir === dir) {
+        break;
+      }
+      dir = parentDir;
+    }
+  }
+  let file: string;
+  for (const checkFile of checkFiles) {
+    try {
+      const stat = await fileStat(checkFile);
+      if (stat.isFile()) {
+        file = checkFile;
+        break;
+      }
+    } catch {}
+  }
+  if (!file) {
+    throw new Error("Not found script");
+  }
+  let workdir: string = argv.workdir || argv.w;
+  if (!workdir) {
+    workdir = dirname(file);
+  } else {
+    workdir = pathResolve(workdir);
+  }
+  return { file, workdir };
 }

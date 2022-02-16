@@ -3,8 +3,8 @@
 setvar("ver", "0.1.0", "Binary version");
 
 /**
- * override variables from just command line.
+ * Override variables from cli with --ver
  */
-export function main() {
+export function test() {
   console.log(getvar("ver"));
 }
