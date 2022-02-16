@@ -3,6 +3,7 @@
     "outDir": "./dist",
     "baseUrl": "./src",
     "target": "ESNext",
+    "declaration": true,
     "module": "nodenext",
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,

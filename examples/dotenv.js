@@ -1,6 +1,8 @@
+#!/usr/bin/env cmru -f
+
 dotenv();
 
-export default function () {
+export function main() {
   console.log(process.env.FOO);
   console.log(process.env.BAR);
 }

@@ -22,16 +22,29 @@ export function dotenv(options?: DotenvConfigOptions) {
   dotenvDefault.config(options);
 }
 
+export const vars: Map<string, { value: any; description?: string }> =
+  new Map();
+
 const psTree = promisify(psTreeModule);
+
+export function setvar(key: string, value: any, description?: string) {
+  vars.set(key, { value, description });
+}
+
+export function getvar(key: string, value: any, description?: string) {
+  return vars.get(key)?.value;
+}
 
 export function registerGlobals() {
   Object.assign(global, {
     $,
+    dotenv,
+    setvar,
+    getvar,
     cd,
     chalk,
     fetch,
     fs,
-    dotenv,
     glob,
     globby,
     nothrow,
@@ -122,6 +135,8 @@ export const $ = <$>function (pieces: TemplateStringsArray, ...args: any[]) {
   setTimeout(promise._run, 0); // Make sure all subprocesses started.
   return promise;
 };
+$.shell = which.sync("bash");
+$.prefix = "set -euo pipefail";
 $.quote = quote;
 
 export function cd(path: string) {

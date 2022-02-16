@@ -1,4 +1,4 @@
-#!/usr/bin/env cmru --cmrufile
+#!/usr/bin/env cmru -f
 
 /**
  * command parameter
