@@ -16,7 +16,7 @@ Commands:
 
 Options:
       --version  Show version number                                   [boolean]
-  -f, --file     Specific cmru file                [string] [default: "cmru.js"]
+  -f, --file     Specific cmru file                [string] [default: "cmru.mjs"]
   -w, --workdir  Specific working directory                             [string]
       --quiet    Don't echo command                                    [boolean]
       --str      String variable                     [string] [default: "0.1.0"]

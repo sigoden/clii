@@ -11,7 +11,7 @@ import { registerGlobals, vars, $, cd } from "./index";
 
 const hideBinArgv = hideBin(process.argv);
 
-const DEFAULT_FILE = "cmru.js";
+const DEFAULT_FILE = "cmru.mjs";
 
 async function main() {
   registerGlobals();
