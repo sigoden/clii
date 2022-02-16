@@ -23,8 +23,6 @@ let {stdout} = await p
 Pipes can be used to show real-time output of programs:
 
 ```js
-$.verbose = false
-
 await $`echo 1; sleep 1; echo 2; sleep 1; echo 3;`
   .pipe(process.stdout)
 ```

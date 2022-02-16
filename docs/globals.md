@@ -1,5 +1,7 @@
 # Globals
 
+> `cmru` globals refer to [`zx`](https://github.com/google/zx)
+
 All functions ($, cd, fetch, etc) are available straight away without any imports.
 
 Or import globals explicitly (for better autocomplete in VS Code).
@@ -21,7 +23,7 @@ await $`mkdir ${name}`
 ```
 
 **There is no need to add extra quotes.** Read more about it in 
-[quotes](docs/quotes.md).
+[quotes](./quotes.md).
 
 You can pass an array of arguments if needed:
 
@@ -65,7 +67,7 @@ The `pipe()` method can be used to redirect stdout:
 await $`cat file.txt`.pipe(process.stdout)
 ```
 
-Read more about [pipelines](docs/pipelines.md).
+Read more about [pipelines](./pipelines.md).
 
 ### `ProcessOutput`
 
@@ -172,10 +174,6 @@ await `dotenv({ path: '/custom/path/to/.env' })`
 await `dotenv({ override: true })`
 ```
 
-### `setvar/getvar`
-
-see [variables](./options.md)
-
 ## Packages
 
 Following packages are available without importing inside scripts.
@@ -252,15 +250,6 @@ Or use a CLI argument: `--prefix='set -e;'`
 
 Specifies a function for escaping special characters during 
 command substitution.
-
-### `$.verbose`
-
-Specifies verbosity. Default is `true`.
-
-In verbose mode, the `cmru` prints all executed commands alongside with their 
-outputs.
-
-Or use a CLI argument `--quiet` to set `$.verbose = false`.
 
 ## Polyfills 
 

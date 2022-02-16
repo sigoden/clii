@@ -7,7 +7,7 @@ import { hideBin } from "yargs/helpers";
 import { parse as parseAst } from "@babel/parser";
 import { parse as parseComment } from "comment-parser";
 import { readFile, stat as fileStat } from "fs/promises";
-import { registerGlobals, vars, $, cd } from "./index";
+import { registerGlobals, $, cd, ProcessOutput } from "./index";
 
 const hideBinArgv = hideBin(process.argv);
 
@@ -44,23 +44,18 @@ async function main() {
       type: "string",
       description: "Specific working directory",
     })
+    .option("verbose", {
+      type: "boolean",
+      describe: "Echo command",
+    })
     .option("quiet", {
       type: "boolean",
-      description: "Don't echo command",
+      describe: "suppress all normal output",
     })
+    .conflicts("verbose", "quiet")
     .implies("workdir", "file");
-  for (const [key, { value, description }] of vars.entries()) {
-    let type: "array" | "number" | "string" | "boolean";
-    if (Array.isArray(value)) {
-      type = "array";
-    } else if (typeof value === "number") {
-      type = "number";
-    } else if (typeof value === "boolean") {
-      type = "boolean";
-    } else {
-      type = "string";
-    }
-    app = app.option(key, {
+  for (const { description, name, type, value } of script.variables) {
+    app = app.option(name, {
       type,
       default: value,
       description,
@@ -91,14 +86,17 @@ async function main() {
       },
       async (argv) => {
         try {
-          $.verbose = !argv["quiet"];
-          for (const [key, { value, description }] of vars.entries()) {
-            vars.set(key, { description, value: argv[key] || value });
-          }
+          $.verbose = !!argv["verbose"];
+          $.quiet = !!argv["quiet"];
           const args = receipt.params.map((param) => argv[param.name]);
           await receipt.fn(...args);
         } catch (err) {
-          console.log(err);
+          if (err instanceof ProcessOutput) {
+            console.error("Error: " + err.message);
+            process.exit(1);
+          } else {
+            throw err;
+          }
         }
       }
     );
@@ -107,7 +105,7 @@ async function main() {
     console.log(await app.getHelp());
     console.log("\n" + script.error);
   } else {
-    app = app.demandCommand();
+    app = app.demandCommand().strictCommands();
   }
   app.argv;
 }
@@ -116,6 +114,7 @@ main();
 
 interface Script {
   receipts: Receipt[];
+  variables: Variable[];
   defaultCmd?: boolean;
   error?: any;
 }
@@ -138,8 +137,18 @@ interface ReceiptParam {
   optional: boolean;
 }
 
+interface Variable {
+  name: string;
+  description: string;
+  value: any;
+  type: YargsOptionType;
+}
+
+type YargsOptionType = "string" | "number" | "boolean" | "array";
+
 async function loadScript(argv: Record<string, any>): Promise<Script> {
   const receipts: Receipt[] = [];
+  const variables: Variable[] = [];
   let defaultCmd = false;
   try {
     const { file, workdir } = await findScript(argv);
@@ -168,10 +177,10 @@ async function loadScript(argv: Record<string, any>): Promise<Script> {
         : null;
       if (comment) {
         if (comment.type === "CommentLine") {
-          description = comment.value;
+          description = comment.value.trim();
         } else if (comment.type === "CommentBlock") {
           const block = parseComment(`/*${comment.value}*/`)[0];
-          description = block.description;
+          description = block.description.split("\n")[0].trim();
           params = block.tags
             .filter((v) => v.tag === "param")
             .map((v) => {
@@ -195,24 +204,45 @@ async function loadScript(argv: Record<string, any>): Promise<Script> {
           name = (declaration2.id as any).name;
         }
       }
-      const fn = modules[name];
-      if (fn && typeof fn === "function") {
+      const elem = modules[name];
+      if (typeof elem === "undefined") continue;
+      if (typeof elem === "function") {
         if (name === "default") defaultCmd = true;
         receipts.push({
           name,
           description,
           params,
-          fn,
+          fn: elem,
         });
+      } else {
+        let type: string;
+        let value: any;
+        const typeofElem = typeof elem;
+        if (["string", "boolean", "number"].indexOf(typeofElem) > -1) {
+          type = typeofElem;
+          value = elem;
+        } else if (Array.isArray(elem)) {
+          type = "array";
+        }
+        if (type) {
+          variables.push({
+            name,
+            description,
+            type: type as any,
+            value,
+          });
+        }
       }
     }
     return {
       defaultCmd,
+      variables,
       receipts,
     };
   } catch (err) {
     return {
       receipts,
+      variables,
       error: err,
     };
   }

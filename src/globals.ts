@@ -2,8 +2,6 @@ import { registerGlobals } from "./index";
 import {
   $,
   dotenv as _dotenv,
-  setvar as _setvar,
-  getvar as _getvar,
   cd as _cd,
   chalk as _chalk,
   fetch as _fetch,
@@ -20,8 +18,6 @@ import {
 declare global {
   let $: $;
   let dotenv: typeof _dotenv;
-  let setvar: typeof _setvar;
-  let getvar: typeof _getvar;
   let cd: typeof _cd;
   let chalk: typeof _chalk;
   // let fetch: typeof _fetch;

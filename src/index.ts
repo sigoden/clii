@@ -22,25 +22,12 @@ export function dotenv(options?: DotenvConfigOptions) {
   dotenvDefault.config(options);
 }
 
-export const vars: Map<string, { value: any; description?: string }> =
-  new Map();
-
 const psTree = promisify(psTreeModule);
-
-export function setvar(key: string, value: any, description?: string) {
-  vars.set(key, { value, description });
-}
-
-export function getvar(key: string, value: any, description?: string) {
-  return vars.get(key)?.value;
-}
 
 export function registerGlobals() {
   Object.assign(global, {
     $,
     dotenv,
-    setvar,
-    getvar,
     cd,
     chalk,
     fetch,
@@ -59,13 +46,14 @@ export interface $ {
   (pieces: TemplateStringsArray, ...args: any[]): ProcessPromise<ProcessOutput>;
 
   verbose: boolean;
+  quiet: boolean;
   shell: string;
   prefix: string;
   quote: (input: string) => string;
 }
 
 export const $ = <$>function (pieces: TemplateStringsArray, ...args: any[]) {
-  const { verbose, shell, prefix } = $;
+  const { verbose, quiet, shell, prefix } = $;
   const __from = new Error().stack?.split(/^\s*at\s/m)[2].trim() || "";
 
   let cmd = pieces[0],
@@ -86,7 +74,7 @@ export const $ = <$>function (pieces: TemplateStringsArray, ...args: any[]) {
   promise._run = () => {
     if (promise.child) return;
     if (promise._prerun) promise._prerun();
-    if (verbose) {
+    if (!quiet && verbose) {
       printCmd(cmd);
     }
 
@@ -118,12 +106,12 @@ export const $ = <$>function (pieces: TemplateStringsArray, ...args: any[]) {
       stderr = "",
       combined = "";
     const onStdout = (data: string) => {
-      if (verbose) process.stdout.write(data);
+      if (!quiet) process.stdout.write(data);
       stdout += data;
       combined += data;
     };
     const onStderr = (data: string) => {
-      if (verbose) process.stderr.write(data);
+      if (!quiet) process.stderr.write(data);
       stderr += data;
       combined += data;
     };
