@@ -149,5 +149,4 @@ export default async function () {
   await testExitCode();
   await testNoThrow();
   await testKill();
-  console.log(chalk.greenBright(" 🍺 Success!"));
 }

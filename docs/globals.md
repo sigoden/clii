@@ -23,6 +23,7 @@
     - [`$config.quiet`](#configquiet)
     - [`$config.shell`](#configshell)
     - [`$config.shellArg`](#configshellarg)
+    - [`$config.color`](#configcolor)
   - [Polyfills](#polyfills)
     - [`__filename` & `__dirname`](#__filename--__dirname)
     - [`require()`](#require)
@@ -99,6 +100,7 @@ class ProcessPromise<T> extends Promise<T> {
   readonly stdout: Readable
   readonly stderr: Readable
   readonly exitCode: Promise<number>
+  readonly nothrow: this
   pipe(dest): ProcessPromise<T>
   kill(signal = 'SIGTERM'): Promise<void>
 }
@@ -271,6 +273,10 @@ $config.shell = '/usr/bin/bash'
 Specifies the command that will be prefixed to all commands run.
 
 Default is `set -euo pipefail;`.
+
+### `$config.color`
+
+Default is `true`. `cmru` will add env var `FORCE_COLOR: '1'` to force the subprocess to add color.
 
 ## Polyfills 
 

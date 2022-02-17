@@ -54,7 +54,6 @@ exports[`examples - functions task6 works 1`] = `
 
 exports[`examples - globals it works 1`] = `
 "/tmp/cmru-cd-test
- 🍺 Success!
 "
 `;
 
@@ -69,6 +68,7 @@ Commands:
   main.js testLs
   main.js testWhich
   main.js testYaml
+  main.js testChalk
   main.js default                                                      [default]
 
 Options:

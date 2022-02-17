@@ -12,7 +12,6 @@ For quotes **cmru** uses special bash syntax (next commands are valid bash):
 
 ```bash
 mkdir $'foo & bar'
-$'ls' $'-la'
 ```
 
 If you add quotes `"${name}"`, it will produce a wrong command. 

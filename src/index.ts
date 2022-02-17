@@ -20,6 +20,7 @@ export { chalk, fs, os, path, yaml };
 export const $config = {
   verbose: false,
   quiet: false,
+  color: true,
   shell: "",
   shellArg: "",
 };

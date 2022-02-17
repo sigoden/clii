@@ -42,6 +42,7 @@ export function $(
       shell: $config.shell ? $config.shell : true,
       stdio: [promise._inheritStdin ? "inherit" : "pipe", "pipe", "pipe"],
       windowsHide: true,
+      env: $config.color ? { ...process.env, FORCE_COLOR: "1" } : process.env,
     });
 
     child.on("exit", (code_) => {

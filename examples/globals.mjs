@@ -45,6 +45,10 @@ export async function testYaml() {
   assert(yaml.parse("foo: bar").foo, "bar");
 }
 
+export async function testChalk() {
+  assert(!!chalk.bgBlack);
+}
+
 export default async function () {
   await testPolyfill();
   await testRequire();
@@ -53,5 +57,5 @@ export default async function () {
   await testLs();
   await testWhich();
   await testYaml();
-  console.log(chalk.greenBright(" 🍺 Success!"));
+  await testChalk();
 }
