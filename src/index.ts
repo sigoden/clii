@@ -10,10 +10,8 @@ import { default as nodeFetch, RequestInfo, RequestInit } from "node-fetch";
 import chalk from "chalk";
 import { default as dotenvDefault, DotenvConfigOptions } from "dotenv";
 import { colorize } from "./utils";
-
 import { $ } from "./exec";
 
-export * from "./exec";
 export * from "./exec";
 
 export { chalk, fs, os, path };

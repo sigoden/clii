@@ -13,7 +13,8 @@ jobs:
           node-version: '16.x'
           registry-url: 'https://registry.npmjs.org'
           scope: '@sigodenjs'
-      - run: yarn
+      - run: npm install
+      - run: npm build
       - run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

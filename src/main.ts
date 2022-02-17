@@ -18,7 +18,7 @@ import {
   Spec as CommentSpec,
 } from "comment-parser";
 import { readFile, stat as fileStat } from "fs/promises";
-import { registerGlobals, cd, ProcessOutput, which } from "./index";
+import { cd, ProcessOutput, which, $config, registerGlobals } from "./index";
 
 const hideBinArgv = hideBin(process.argv);
 
