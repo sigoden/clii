@@ -1,34 +1,37 @@
 import { registerGlobals } from "./index";
 import {
   $,
-  dotenv as _dotenv,
   cd as _cd,
-  chalk as _chalk,
   fetch as _fetch,
-  fs as _fs,
-  glob as _glob,
-  globby as _globby,
-  nothrow as _nothrow,
-  os as _os,
-  path as _path,
   question as _question,
   sleep as _sleep,
+  nothrow as _nothrow,
+  dotenv as _dotenv,
+  chalk as _chalk,
+  fs as _fs,
+  globby as _globby,
+  os as _os,
+  path as _path,
+  glob as _glob,
 } from "./index";
 
 declare global {
   let $: $;
-  let dotenv: typeof _dotenv;
+
   let cd: typeof _cd;
-  let chalk: typeof _chalk;
   // let fetch: typeof _fetch;
-  let fs: typeof _fs;
-  let glob: typeof _glob;
-  let globby: typeof _globby;
-  let nothrow: typeof _nothrow;
-  let os: typeof _os;
-  let path: typeof _path;
   let question: typeof _question;
   let sleep: typeof _sleep;
+  let nothrow: typeof _nothrow;
+  let dotenv: typeof _dotenv;
+
+  let chalk: typeof _chalk;
+  let fs: typeof _fs;
+  let globby: typeof _globby;
+  let os: typeof _os;
+  let path: typeof _path;
+
+  let glob: typeof _glob;
 }
 
 registerGlobals();

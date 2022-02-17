@@ -27,18 +27,21 @@ const psTree = promisify(psTreeModule);
 export function registerGlobals() {
   Object.assign(global, {
     $,
-    dotenv,
+    // functions
     cd,
-    chalk,
     fetch,
-    fs,
-    glob,
-    globby,
-    nothrow,
-    os,
-    path,
     question,
     sleep,
+    nothrow,
+    dotenv,
+    // modules
+    chalk,
+    fs,
+    globby,
+    os,
+    path,
+    // alias
+    glob,
   });
 }
 

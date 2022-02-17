@@ -1,5 +1,31 @@
 # Globals
 
+- [Globals](#globals)
+  - [``$`command` ``](#command-)
+    - [`ProcessPromise`](#processpromise)
+    - [`ProcessOutput`](#processoutput)
+  - [Functions](#functions)
+    - [`cd()`](#cd)
+    - [`fetch()`](#fetch)
+    - [`question()`](#question)
+    - [`sleep()`](#sleep)
+    - [`nothrow()`](#nothrow)
+    - [`dotenv()`](#dotenv)
+  - [Packages](#packages)
+    - [`chalk` package](#chalk-package)
+    - [`fs` package](#fs-package)
+    - [`globby` package](#globby-package)
+    - [`os` package](#os-package)
+    - [`path` package](#path-package)
+  - [Configuration](#configuration)
+    - [`$.shell`](#shell)
+    - [`$.prefix`](#prefix)
+    - [`$.quote`](#quote)
+  - [Polyfills](#polyfills)
+    - [`__filename` & `__dirname`](#__filename--__dirname)
+    - [`require()`](#require)
+
+
 > `cmru` globals refer to [`zx`](https://github.com/google/zx)
 
 All functions ($, cd, fetch, etc) are available straight away without any imports.

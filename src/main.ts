@@ -5,7 +5,11 @@ import { resolve as pathResolve, dirname } from "path";
 import { createRequire } from "module";
 import { hideBin } from "yargs/helpers";
 import { parse as parseAst } from "@babel/parser";
-import { parse as parseComment } from "comment-parser";
+import { Comment } from "@babel/types";
+import {
+  parse as parseBlockComment,
+  Spec as CommentSpec,
+} from "comment-parser";
 import { readFile, stat as fileStat } from "fs/promises";
 import { registerGlobals, $, cd, ProcessOutput } from "./index";
 
@@ -50,7 +54,7 @@ async function main() {
     })
     .option("quiet", {
       type: "boolean",
-      describe: "suppress all normal output",
+      describe: "Suppress all normal output",
     })
     .conflicts("verbose", "quiet")
     .implies("workdir", "file");
@@ -63,20 +67,33 @@ async function main() {
   }
   for (const receipt of script.receipts) {
     let cmd = `${receipt.name}`;
+    let cmdWithOptions = false;
     for (const param of receipt.params) {
-      const [b, e] = param.optional ? ["[", "]"] : ["<", ">"];
-      if (param.type.endsWith("[]")) {
-        cmd += ` ${b}${param.name}...${e}`;
+      if (param.props?.length > 0) {
+        cmdWithOptions = true;
       } else {
-        cmd += ` ${b}${param.name}${e}`;
+        const [b, e] = param.optional ? ["[", "]"] : ["<", ">"];
+        if (param.type.endsWith("[]")) {
+          cmd += ` ${b}${param.name}...${e}`;
+        } else {
+          cmd += ` ${b}${param.name}${e}`;
+        }
       }
     }
+    if (cmdWithOptions) cmd += " [options]";
     app = app.command(
       cmd,
       receipt.description,
-      (yargs) => {
+      (yargs: yargs.Argv<any>) => {
         for (const param of receipt.params) {
-          if (param.description) {
+          if (param.props?.length > 0) {
+            for (const { name, description, type } of param.props) {
+              yargs = yargs.option(name, {
+                type: type as any,
+                description,
+              });
+            }
+          } else if (param.description) {
             yargs.positional(param.name, {
               description: param.description,
             });
@@ -88,7 +105,16 @@ async function main() {
         try {
           $.verbose = !!argv["verbose"];
           $.quiet = !!argv["quiet"];
-          const args = receipt.params.map((param) => argv[param.name]);
+          const args = receipt.params.map((param) => {
+            if (param.props?.length > 0) {
+              return param.props.reduce((acc, item) => {
+                acc[item.name] = argv[item.name];
+                return acc;
+              }, {} as any);
+            } else {
+              return argv[param.name];
+            }
+          });
           await receipt.fn(...args);
         } catch (err) {
           if (err instanceof ProcessOutput) {
@@ -133,8 +159,9 @@ interface ReceiptFn {
 interface ReceiptParam {
   name: string;
   description: string;
-  type: string;
+  type: YargsOptionType | "object";
   optional: boolean;
+  props?: ReceiptParam[];
 }
 
 interface Variable {
@@ -153,12 +180,12 @@ async function loadScript(argv: Record<string, any>): Promise<Script> {
   try {
     const { file, workdir } = await findScript(argv);
     cd(workdir);
-    const source = await readFile(file, "utf-8");
-    const modules = await import(file);
     const __filename = pathResolve(file);
     const __dirname = dirname(__filename);
     const require = createRequire(file);
     Object.assign(global, { __filename, __dirname, require, argv });
+    const source = await readFile(file, "utf-8");
+    const modules = await import(file);
     const ast = parseAst(source, {
       sourceType: "module",
     });
@@ -170,25 +197,10 @@ async function loadScript(argv: Record<string, any>): Promise<Script> {
       )
         continue;
       let name: string;
-      let description = "";
-      let params: ReceiptParam[] = [];
       const comment = leadingComments
         ? leadingComments[statement.leadingComments.length - 1]
         : null;
-      if (comment) {
-        if (comment.type === "CommentLine") {
-          description = comment.value.trim();
-        } else if (comment.type === "CommentBlock") {
-          const block = parseComment(`/*${comment.value}*/`)[0];
-          description = block.description.split("\n")[0].trim();
-          params = block.tags
-            .filter((v) => v.tag === "param")
-            .map((v) => {
-              const { name, type, description, optional } = v;
-              return { name, type, description, optional };
-            });
-        }
-      }
+      const { description, params } = parseComment(comment);
       const declaration = statement.declaration;
       if (declaration.type === "FunctionDeclaration") {
         if (declaration.id) {
@@ -284,4 +296,56 @@ async function findScript(argv: Record<string, any>) {
     workdir = pathResolve(workdir);
   }
   return { file, workdir };
+}
+
+function parseComment(comment: Comment) {
+  const params: ReceiptParam[] = [];
+  const result = { description: "", params };
+  if (!comment) return result;
+  const block = parseBlockComment(`/*${comment.value}*/`)[0];
+  if (comment.type === "CommentLine") {
+    result.description = comment.value.trim();
+  } else if (comment.type === "CommentBlock") {
+    result.description = block.description.split("\n")[0].trim();
+    const validTags = block.tags.filter(isValidTagSpec);
+    for (const spec of validTags) {
+      const { name, description, optional } = spec;
+      const type = spec.type.toLowerCase() as any;
+      const param: ReceiptParam = {
+        name,
+        type,
+        description: description.replace(/^(\s*)?-(\s*)?/, ""),
+        optional,
+      };
+      const parts = name.split(".");
+      if (parts.length === 1) {
+        if (type === "object") param.props = [];
+        params.push(param);
+      } else if (parts.length === 2) {
+        const [parent, localName] = parts;
+        const parentParam = params.find(
+          (x) => x.name === parent && Array.isArray(x.props)
+        );
+        if (parentParam) {
+          param.name = localName;
+          parentParam.props.push(param);
+        }
+      }
+    }
+  }
+  return result;
+}
+
+function isValidTagSpec(spec: CommentSpec): boolean {
+  if (spec.tag !== "param") return;
+  const type = spec.type.toLowerCase();
+  const isValidScalar = (type) =>
+    !!["string", "boolean", "number"].find((x) => x === type);
+  if (isValidScalar(type) || type === "object") {
+    return true;
+  }
+  if (type.endsWith("[]")) {
+    return isValidScalar(type.slice(0, -2));
+  }
+  return false;
 }

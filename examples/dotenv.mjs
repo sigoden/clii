@@ -2,7 +2,7 @@
 
 dotenv();
 
-// default command
+// Default command
 export default async function () {
   await $`echo ${process.env.FOO}`;
   await $`echo ${process.env.BAR}`;

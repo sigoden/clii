@@ -1,5 +1,7 @@
 import { strict as assert } from "assert";
 
+const rootDir = path.resolve(__dirname, "..");
+
 // Only stdout is used during command substitution
 export async function testStdout() {
   let hello = await $`echo Error >&2; echo Hello`;
@@ -68,26 +70,20 @@ export async function testArgToString() {
 
 // Can use array as an argument
 export async function testArrayArg() {
-  const dir = process.cwd();
-  cd(__dirname);
-  cd("..");
+  cd(rootDir);
   try {
     let files = ["./README.md", "./package.json"];
     await $`tar czf archive ${files}`;
   } finally {
     await $`rm archive`;
   }
-  cd(dir);
 }
 
 // Quiet mode is working
 export async function testQuiet() {
-  const dir = process.cwd();
-  cd(__dirname);
-  cd("..");
-  let { stdout } = await $`node dist/main.js --quiet -f examples/dotenv.js`;
+  cd(rootDir);
+  let { stdout } = await $`node dist/main.js --quiet -f examples/dotenv.mjs`;
   assert(!stdout.includes("foo"));
-  cd(dir);
 }
 
 // Pipes are working
@@ -98,7 +94,7 @@ export async function testPipe() {
   assert(stdout === "HELLO WORLD\n");
 
   try {
-    let w = await $`echo foo`.pipe(fs.createWriteStream("/tmp/output.txt"));
+    await $`echo foo`.pipe(fs.createWriteStream("/tmp/output.txt"));
     assert((await fs.readFile("/tmp/output.txt")).toString() === "foo\n");
 
     let r = $`cat`;
@@ -178,7 +174,7 @@ export async function testCd() {
     assert.equal(path.basename(pwd), "cmru-cd-test");
   } finally {
     fs.rmSync("/tmp/cmru-cd-test", { recursive: true });
-    cd(__dirname);
+    cd(rootDir);
   }
 }
 

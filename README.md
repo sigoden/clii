@@ -52,7 +52,7 @@ Options:
   -f, --file     Specific cmru file               [string] [default: "cmru.mjs"]
   -w, --workdir  Specific working directory                             [string]
       --verbose  Echo command                                          [boolean]
-      --quiet    suppress all normal output                            [boolean]
+      --quiet    Suppress all normal output                            [boolean]
       --foo      This is vairable                      [string] [default: "bar"]
   -h, --help     Show help                                             [boolean]
 
@@ -93,29 +93,31 @@ export let arr = [];
 
 ```js
 /**
- * This is task3
- * @param {string} str - String variable
- * @param {boolean} bool - Boolean variable
- * @param {number} num - Number variable
- * @param {string[]} array - Array variable
+ * Both parameters and options
+ * @param {Object} options
+ * @param {string} options.foo - Option foo
+ * @param {number} options.bar - Option bar
+ * @param {string} pos - Positional param
  */
-export async function task3(str, bool, num, array) {
-  console.log(str, bool, num, array)
+export function task6(options, pos) {
+  console.log(options, pos);
 }
+
 ```
 
 `cmru` maps exported functions to cli commands
 
 ```
-cmru task3 <str> <bool> <num> <array...>
+cmru task6 <pos> [options]
 
-This is task3
+Both parameters and options
 
 Positionals:
-  str    - String variable                                            [required]
-  bool   - Boolean variable                                           [required]
-  num    - Number variable                                            [required]
-  array  - Array variable                       [array] [required] [default: []]
+  pos  Positional param                                               [required]
+
+Options:
+      --foo      Option foo                                             [string]
+      --bar      Option bar                                             [number]
 ```
 
 ### default
@@ -126,7 +128,7 @@ export default async function () {
 }
 ```
 
-exec `cmru` without cmd will execute default function.
+default export function will be default command
 
 ```sh
 $ cmru
