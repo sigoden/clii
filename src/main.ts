@@ -1,11 +1,17 @@
 #!/usr/bin/env node
 
-import yargs from "yargs";
+import yargs, { option } from "yargs";
 import { resolve as pathResolve, dirname } from "path";
 import { createRequire } from "module";
 import { hideBin } from "yargs/helpers";
 import { parse as parseAst } from "@babel/parser";
-import { Comment } from "@babel/types";
+import {
+  Comment,
+  Declaration,
+  Identifier,
+  ObjectProperty,
+  VariableDeclaration,
+} from "@babel/types";
 import {
   parse as parseBlockComment,
   Spec as CommentSpec,
@@ -21,14 +27,6 @@ async function main() {
   registerGlobals();
   const defaultArgv = yargs(hideBinArgv).parseSync();
   const script = await loadScript(defaultArgv);
-  if (
-    script.defaultCmd &&
-    !defaultArgv._[0] &&
-    !defaultArgv.h &&
-    !defaultArgv.help
-  ) {
-    hideBinArgv.push("default");
-  }
   let app = yargs(hideBinArgv)
     .usage("Usage: $0 <cmd> [options]")
     .help()
@@ -58,7 +56,7 @@ async function main() {
     })
     .conflicts("verbose", "quiet")
     .implies("workdir", "file");
-  for (const { description, name, type, value } of script.variables) {
+  for (const { description, name, type, value } of script.options) {
     app = app.option(name, {
       type,
       default: value,
@@ -82,7 +80,7 @@ async function main() {
     }
     if (cmdWithOptions) cmd += " [options]";
     app = app.command(
-      cmd,
+      script.defaultCmd ? [cmd, "<$0>"] : cmd,
       receipt.description,
       (yargs: yargs.Argv<any>) => {
         for (const param of receipt.params) {
@@ -105,6 +103,7 @@ async function main() {
         try {
           $.verbose = !!argv["verbose"];
           $.quiet = !!argv["quiet"];
+          script.updateOptions(argv);
           const args = receipt.params.map((param) => {
             if (param.props?.length > 0) {
               return param.props.reduce((acc, item) => {
@@ -140,7 +139,8 @@ main();
 
 interface Script {
   receipts: Receipt[];
-  variables: Variable[];
+  options: ScriptOption[];
+  updateOptions?: (argv: Record<string, any>) => void;
   defaultCmd?: boolean;
   error?: any;
 }
@@ -164,7 +164,7 @@ interface ReceiptParam {
   props?: ReceiptParam[];
 }
 
-interface Variable {
+interface ScriptOption {
   name: string;
   description: string;
   value: any;
@@ -175,7 +175,7 @@ type YargsOptionType = "string" | "number" | "boolean" | "array";
 
 async function loadScript(argv: Record<string, any>): Promise<Script> {
   const receipts: Receipt[] = [];
-  const variables: Variable[] = [];
+  const options: ScriptOption[] = [];
   let defaultCmd = false;
   try {
     const { file, workdir } = await findScript(argv);
@@ -185,7 +185,7 @@ async function loadScript(argv: Record<string, any>): Promise<Script> {
     const require = createRequire(file);
     Object.assign(global, { __filename, __dirname, require, argv });
     const source = await readFile(file, "utf-8");
-    const modules = await import(file);
+    const moduleExports = await import(file);
     const ast = parseAst(source, {
       sourceType: "module",
     });
@@ -196,65 +196,77 @@ async function loadScript(argv: Record<string, any>): Promise<Script> {
         statement.type !== "ExportDefaultDeclaration"
       )
         continue;
-      let name: string;
-      const comment = leadingComments
-        ? leadingComments[statement.leadingComments.length - 1]
-        : null;
-      const { description, params } = parseComment(comment);
-      const declaration = statement.declaration;
-      if (declaration.type === "FunctionDeclaration") {
-        if (declaration.id) {
-          name = declaration.id.name;
+      const declaration = statement.declaration as Declaration;
+      let name = parseExportName(declaration);
+      if (!name) {
+        if (statement.type === "ExportDefaultDeclaration") {
+          name = "default";
         } else {
-          if (statement.type === "ExportDefaultDeclaration") {
-            name = "default";
-          }
-        }
-      } else if (declaration.type === "VariableDeclaration") {
-        const declaration2 = declaration.declarations[0];
-        if (declaration2.type === "VariableDeclarator") {
-          name = (declaration2.id as any).name;
+          continue;
         }
       }
-      const elem = modules[name];
-      if (typeof elem === "undefined") continue;
-      if (typeof elem === "function") {
+      const exportItem = moduleExports[name];
+      if (typeof exportItem === "function") {
+        const comment = leadingComments ? leadingComments[0] : null;
+        const { description, params } = parseComment(comment);
         if (name === "default") defaultCmd = true;
         receipts.push({
           name,
           description,
           params,
-          fn: elem,
+          fn: moduleExports[name],
         });
       } else {
-        let type: string;
-        let value: any;
-        const typeofElem = typeof elem;
-        if (["string", "boolean", "number"].indexOf(typeofElem) > -1) {
-          type = typeofElem;
-          value = elem;
-        } else if (Array.isArray(elem)) {
-          type = "array";
-        }
-        if (type) {
-          variables.push({
-            name,
-            description,
-            type: type as any,
-            value,
-          });
+        if (name === "options") {
+          const declaration2 = (declaration as VariableDeclaration)
+            .declarations[0];
+          if (declaration2.init.type === "ObjectExpression") {
+            const props = declaration2.init.properties.filter(
+              (v) => v.type === "ObjectProperty" && v.key.type === "Identifier"
+            ) as ObjectProperty[];
+            for (const item of props) {
+              const description = item.leadingComments
+                ? item.leadingComments[0].value.trim()
+                : item.trailingComments
+                ? item.trailingComments[0].value.trim()
+                : "";
+              const key = (item.key as Identifier).name;
+              const value = exportItem[key];
+              let type: string;
+              if (["string", "boolean", "number"].indexOf(typeof value) > -1) {
+                type = typeof value;
+              } else if (Array.isArray(value)) {
+                type = "array";
+              }
+              if (type) {
+                options.push({
+                  name: key,
+                  description,
+                  value,
+                  type: type as YargsOptionType,
+                });
+              }
+            }
+          }
         }
       }
     }
     return {
       defaultCmd,
-      variables,
+      options,
+      updateOptions: (argv: Record<string, any>) => {
+        for (const { name } of options) {
+          if (typeof argv[name] !== "undefined") {
+            moduleExports["options"][name] = argv[name];
+          }
+        }
+      },
       receipts,
     };
   } catch (err) {
     return {
       receipts,
-      variables,
+      options,
       error: err,
     };
   }
@@ -334,6 +346,21 @@ function parseComment(comment: Comment) {
     }
   }
   return result;
+}
+
+function parseExportName(declaration: Declaration): string {
+  let name = "";
+  if (declaration.type === "FunctionDeclaration") {
+    if (declaration.id) {
+      name = declaration.id.name;
+    }
+  } else if (declaration.type === "VariableDeclaration") {
+    const declaration2 = declaration.declarations[0];
+    if (declaration2.type === "VariableDeclarator") {
+      name = (declaration2.id as any).name || "";
+    }
+  }
+  return name;
 }
 
 function isValidTagSpec(spec: CommentSpec): boolean {

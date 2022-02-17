@@ -12,9 +12,9 @@ export function task1(foo) {
  * Parameter with default value
  * @param {string} [foo] - Optional positional param
  */
-export function task2(foo = "master@example.com") {
+export const task2 = (foo = "master@example.com") => {
   console.log(foo);
-}
+};
 
 /**
  * Array parameter
@@ -36,11 +36,13 @@ export function task4(foo, bars) {
 /**
  * Command with options
  * @param {Object} options
- * @param {string} options.foo - option foo
- * @param {string} options.bar - option bar
+ * @param {string} options.str - String option
+ * @param {number} options.num - Number option
+ * @param {boolean} options.bool - Number option
+ * @param {string[]} options.arr - Array option
  */
 export function task5(options) {
-  console.log(options);
+  console.log(JSON.stringify(options));
 }
 
 /**
@@ -51,5 +53,5 @@ export function task5(options) {
  * @param {string} pos - Positional param
  */
 export function task6(options, pos) {
-  console.log(options, pos);
+  console.log(JSON.stringify({ options, pos }));
 }

@@ -1,0 +1,65 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`examples - dotenv .env file works 1`] = `
+"foo
+bar
+"
+`;
+
+exports[`examples - functions render cli 1`] = `
+"Usage: main.js <cmd> [options]
+
+Commands:
+  main.js task1 <foo>            One parameter
+  main.js task2 [foo]            Parameter with default value
+  main.js task3 <arr...>         Array parameter
+  main.js task4 <foo> <bars...>  Multiple parameters
+  main.js task5 [options]        Command with options
+  main.js task6 <pos> [options]  Both parameters and options
+
+Options:
+      --version  Show version number                                   [boolean]
+  -f, --file     Specific cmru file               [string] [default: \\"cmru.mjs\\"]
+  -w, --workdir  Specific working directory                             [string]
+      --verbose  Echo command                                          [boolean]
+      --quiet    Suppress all normal output                            [boolean]
+  -h, --help     Show help                                             [boolean]
+"
+`;
+
+exports[`examples - functions task4 works 1`] = `
+"a b,c
+"
+`;
+
+exports[`examples - functions task5 works 1`] = `
+"{\\"str\\":\\"abc\\",\\"num\\":3,\\"bool\\":true,\\"arr\\":[\\"x\\",\\"y\\"]}
+"
+`;
+
+exports[`examples - functions task6 works 1`] = `
+"{\\"options\\":{\\"foo\\":\\"abc\\",\\"bar\\":123},\\"pos\\":\\"ooo\\"}
+"
+`;
+
+exports[`examples - options it works 1`] = `
+"{ str: 'abc', bool: true, num: 3, arr: [ 'x', 'y' ] }
+"
+`;
+
+exports[`examples - options render cli 1`] = `
+"Usage: main.js <cmd> [options]
+
+Options:
+      --version  Show version number                                   [boolean]
+  -f, --file     Specific cmru file               [string] [default: \\"cmru.mjs\\"]
+  -w, --workdir  Specific working directory                             [string]
+      --verbose  Echo command                                          [boolean]
+      --quiet    Suppress all normal output                            [boolean]
+      --str      String variable                     [string] [default: \\"0.1.0\\"]
+      --bool     Boolean variable                     [boolean] [default: false]
+      --num      Number variable                           [number] [default: 3]
+      --arr      Array varialbe                            [array] [default: []]
+  -h, --help     Show help                                             [boolean]
+"
+`;

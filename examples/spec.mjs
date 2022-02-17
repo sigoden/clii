@@ -56,11 +56,6 @@ export async function testEnvVar2() {
   await $`echo $FOO`;
 }
 
-// Globals are defined
-export async function testGlobalVars() {
-  console.log(__filename, __dirname);
-}
-
 // toString() is called on arguments
 export async function testArgToString() {
   let foo = 0;
@@ -202,7 +197,6 @@ export default async function () {
   await testQuoteSpace();
   await testPipeFail();
   await testEnvVar2();
-  await testGlobalVars();
   await testArgToString();
   await testArrayArg();
   await testQuiet();

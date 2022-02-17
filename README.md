@@ -17,20 +17,23 @@ npm i -g cmru
 1. create a `cmru.mjs` file in your workspace root directory.
 
 ```js
-// This is vairable
-export let foo = "bar"
+// This is options
+export let options = {
+  // Option foo
+  foo: "foo",
+};
 
 // This is task1
 export async function task1() {
-  await $`pwd`
+  await $`pwd`;
 }
 
 /**
  * This is task2 with parameters
- * @param {string} bar - this is command argument
+ * @param {string} bar - Argument bar
  */
 export async function task2(bar) {
-  await $`echo ${foo} ${bar}`
+  await $`echo ${options.foo} ${bar}`;
 }
 
 ```
@@ -44,8 +47,8 @@ $ cmru
 Usage: cmru <cmd> [options]
 
 Commands:
-  cmru task1        This is task1
-  cmru task2 <bar>  This is task2 with parameters
+  main.js task1        This is task1
+  main.js task2 <bar>  This is task2 with parameters
 
 Options:
       --version  Show version number                                   [boolean]
@@ -53,7 +56,7 @@ Options:
   -w, --workdir  Specific working directory                             [string]
       --verbose  Echo command                                          [boolean]
       --quiet    Suppress all normal output                            [boolean]
-      --foo      This is vairable                      [string] [default: "bar"]
+      --foo      Option foo                            [string] [default: "foo"]
   -h, --help     Show help                                             [boolean]
 
 Not enough non-option arguments: got 0, need at least 1
@@ -67,17 +70,19 @@ baz goo
 
 ## Exports
 
-### variables
+### options
 
 ```js
-// String variable
-export let str = "0.1.0";
-// Boolean variable
-export let bool = false;
-// Number variable
-export let num = 3;
-// Array varialbe
-export let arr = [];
+export const options = {
+  // String variable
+  str: "0.1.0",
+  // Boolean variable
+  bool: false,
+  // Number variable
+  num: 3,
+  // Array varialbe
+  arr: [],
+};
 ```
 
 `cmru` maps exported variables to cli options
@@ -86,7 +91,7 @@ export let arr = [];
       --str      String variable                     [string] [default: "0.1.0"]
       --bool     Boolean variable                     [boolean] [default: false]
       --num      Number variable                           [number] [default: 3]
-      --arr      Array varialbe                                          [array]
+      --arr      Array varialbe                            [array] [default: []]
 ```
 
 ### functions
@@ -159,7 +164,6 @@ export async function task1() {
 ```
 
 see [globals](./docs/globals.md) for details.
-
 
 
 ## License
