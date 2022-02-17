@@ -40,7 +40,7 @@ export async function task2(bar) {
 
 2. run `cmru` in workspace root directory.
 
-`cmru` will read `cmru.mjs` and generate cmd for each export functions.
+`cmru` will read `cmru.mjs` and generate subcommands for each export functions and cli options for export options.
 
 ```
 $ cmru
@@ -64,6 +64,9 @@ Not enough non-option arguments: got 0, need at least 1
 $ cmru task1
 /tmp/test-cmru
 
+$ cmru task2 goo
+foo goo
+
 $ cmru task2 --foo baz goo
 baz goo
 ```
@@ -85,7 +88,7 @@ export const options = {
 };
 ```
 
-`cmru` maps exported variables to cli options
+`cmru` maps exported options to cli options.
 
 ```
       --str      String variable                     [string] [default: "0.1.0"]
@@ -110,7 +113,7 @@ export function task6(options, pos) {
 
 ```
 
-`cmru` maps exported functions to cli commands
+`cmru` maps exported functions to subcommands.
 
 ```
 cmru task6 <pos> [options]
@@ -133,7 +136,7 @@ export default async function () {
 }
 ```
 
-default export function will be default command
+call `cmru` without subcommand will run default function.
 
 ```sh
 $ cmru

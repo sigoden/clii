@@ -29,7 +29,6 @@
     - [`argv`](#argv)
 
 
-> `cmru` globals refer to [`zx`](https://github.com/google/zx)
 
 All functions ($, cd, fetch, etc) are available straight away without any imports.
 
@@ -40,6 +39,8 @@ import 'cmru/globals'
 ```
 
 ## ``$`command` ``
+
+> Idea comes from [`zx`](https://github.com/google/zx)
 
 Executes a given string using the `spawn` function from the
 `child_process` package and returns `ProcessPromise<ProcessOutput>`.

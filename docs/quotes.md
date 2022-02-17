@@ -67,10 +67,10 @@ let files = '~/dev/**/*.md' // wrong
 await $`ls ${files}`
 ```
 
-Use `glob` function and `os` package:
+Use `ls` function and `os` package:
 
 ```js
-let files = await glob(os.homedir() + '/dev/**/*.md')
+let files = await ls(os.homedir() + '/dev/**/*.md')
 await $`ls ${files}`
 ```
 
