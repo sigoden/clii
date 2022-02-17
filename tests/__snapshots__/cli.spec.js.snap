@@ -81,12 +81,12 @@ Options:
 "
 `;
 
-exports[`examples - options it works 1`] = `
+exports[`examples - settings it works 1`] = `
 "{ str: 'abc', bool: true, num: 3, arr: [ 'x', 'y' ] }
 "
 `;
 
-exports[`examples - options render cli 1`] = `
+exports[`examples - settings render cli 1`] = `
 "Usage: main.js <cmd> [options]
 
 Options:
@@ -100,5 +100,16 @@ Options:
       --num      Number variable                           [number] [default: 3]
       --arr      Array varialbe                            [array] [default: []]
   -h, --help     Show help                                             [boolean]
+"
+`;
+
+exports[`global options run with --quiet 1`] = `""`;
+
+exports[`global options run with --verbose 1`] = `
+"$ which bash
+$ echo foo
+foo
+$ echo bar
+bar
 "
 `;

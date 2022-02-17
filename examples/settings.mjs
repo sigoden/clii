@@ -1,6 +1,6 @@
 #!/usr/bin/env cmru -f
 
-export const options = {
+export const settings = {
   // String variable
   str: "0.1.0",
   // Boolean variable
@@ -12,8 +12,8 @@ export const options = {
 };
 
 /**
- * Override variables with cli options
+ * Override settings with cli options
  */
 export default function () {
-  console.log(options);
+  console.log(settings);
 }

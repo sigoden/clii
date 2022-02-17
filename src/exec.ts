@@ -33,7 +33,7 @@ export function $(
   promise._run = () => {
     if (promise.child) return;
     if (promise._prerun) promise._prerun();
-    if (!$config.quiet && $config.verbose) {
+    if (!promise._quiet && $config.verbose) {
       printCmd(cmd);
     }
 
@@ -66,12 +66,12 @@ export function $(
       stderr = "",
       combined = "";
     const onStdout = (data: string) => {
-      if (!$config.quiet) process.stdout.write(data);
+      if (!promise._quiet) process.stdout.write(data);
       stdout += data;
       combined += data;
     };
     const onStderr = (data: string) => {
-      if (!$config.quiet) process.stderr.write(data);
+      if (!promise._quiet) process.stderr.write(data);
       stderr += data;
       combined += data;
     };
@@ -93,6 +93,7 @@ export class ProcessPromise<T> extends Promise<T> {
   public _postrun?: () => void;
   public _run = () => {};
   public _nothrow = false;
+  public _quiet = $config.quiet;
 
   get stdin() {
     this._inheritStdin = false;
@@ -118,6 +119,11 @@ export class ProcessPromise<T> extends Promise<T> {
 
   get nothrow() {
     this._nothrow = true;
+    return this;
+  }
+
+  get quiet() {
+    this._quiet = true;
     return this;
   }
 

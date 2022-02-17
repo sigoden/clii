@@ -120,10 +120,16 @@ export async function testExitCode() {
   assert((await $`[ -f ${__filename} ]`.exitCode) === 0);
 }
 
-// nothrow() doesn't throw
+// Nothrow doesn't throw
 export async function testNoThrow() {
   let { exitCode } = await $`exit 42`.nothrow;
   assert(exitCode === 42);
+}
+
+// Quiet Quiet suppress normal output
+export async function testQuiet() {
+  await $`echo abc`;
+  await $`echo def`.quiet;
 }
 
 // The kill() method works.
@@ -148,5 +154,6 @@ export default async function () {
   await testPipeTwice();
   await testExitCode();
   await testNoThrow();
+  await testQuiet();
   await testKill();
 }

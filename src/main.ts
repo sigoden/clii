@@ -58,7 +58,7 @@ async function main() {
     })
     .conflicts("verbose", "quiet")
     .implies("workdir", "file");
-  for (const { description, name, type, value } of script.options) {
+  for (const { description, name, type, value } of script.settings) {
     app = app.option(name, {
       type,
       default: value,
@@ -111,7 +111,7 @@ async function main() {
             $config.shell = await which("bash");
             $config.shellArg = "set -euo pipefail;";
           } catch {}
-          script.updateOptions(argv);
+          script.updateSettings(argv);
           const args = receipt.params.map((param) => {
             if (param.props?.length > 0) {
               return param.props.reduce((acc, item) => {
@@ -147,8 +147,8 @@ main();
 
 interface Script {
   receipts: Receipt[];
-  options: ScriptOption[];
-  updateOptions?: (argv: Record<string, any>) => void;
+  settings: ScriptSetting[];
+  updateSettings?: (argv: Record<string, any>) => void;
   defaultCmd?: boolean;
   error?: any;
 }
@@ -172,7 +172,7 @@ interface ReceiptParam {
   props?: ReceiptParam[];
 }
 
-interface ScriptOption {
+interface ScriptSetting {
   name: string;
   description: string;
   value: any;
@@ -183,7 +183,7 @@ type YargsOptionType = "string" | "number" | "boolean" | "array";
 
 async function loadScript(argv: Record<string, any>): Promise<Script> {
   const receipts: Receipt[] = [];
-  const options: ScriptOption[] = [];
+  const settings: ScriptSetting[] = [];
   let defaultCmd = false;
   try {
     const { file, workdir } = await findScript(argv);
@@ -227,7 +227,7 @@ async function loadScript(argv: Record<string, any>): Promise<Script> {
           fn: moduleExports[name],
         });
       } else {
-        if (name === "options") {
+        if (name === "settings") {
           const declaration2 = (declaration as VariableDeclaration)
             .declarations[0];
           if (declaration2.init.type === "ObjectExpression") {
@@ -249,7 +249,7 @@ async function loadScript(argv: Record<string, any>): Promise<Script> {
                 type = "array";
               }
               if (type) {
-                options.push({
+                settings.push({
                   name: key,
                   description,
                   value,
@@ -263,11 +263,11 @@ async function loadScript(argv: Record<string, any>): Promise<Script> {
     }
     return {
       defaultCmd,
-      options,
-      updateOptions: (argv: Record<string, any>) => {
-        for (const { name } of options) {
+      settings: settings,
+      updateSettings: (argv: Record<string, any>) => {
+        for (const { name } of settings) {
           if (typeof argv[name] !== "undefined") {
-            moduleExports["options"][name] = argv[name];
+            moduleExports["settings"][name] = argv[name];
           }
         }
       },
@@ -276,7 +276,7 @@ async function loadScript(argv: Record<string, any>): Promise<Script> {
   } catch (err) {
     return {
       receipts,
-      options,
+      settings: settings,
       error: err,
     };
   }

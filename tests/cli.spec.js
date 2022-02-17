@@ -56,8 +56,8 @@ describe("examples - functions", () => {
   });
 });
 
-describe("examples - options", () => {
-  const prefixs = ["-f", resolveRootDir("examples/options.mjs")];
+describe("examples - settings", () => {
+  const prefixs = ["-f", resolveRootDir("examples/settings.mjs")];
   it("render cli", async () => {
     let result = await cli([...prefixs, "-h"]);
     expect(result.stdout).toMatchSnapshot();
@@ -87,6 +87,18 @@ describe("examples - globals", () => {
   });
   it("it works", async () => {
     let result = await cli(prefixs);
+    expect(result.stdout).toMatchSnapshot();
+  });
+});
+
+describe("global options", () => {
+  const prefixs = ["-f", resolveRootDir("examples/dotenv.mjs")];
+  it("run with --quiet", async () => {
+    let result = await cli(["--quiet", ...prefixs]);
+    expect(result.stdout).toMatchSnapshot();
+  });
+  it("run with --verbose", async () => {
+    let result = await cli(["--verbose", ...prefixs]);
     expect(result.stdout).toMatchSnapshot();
   });
 });

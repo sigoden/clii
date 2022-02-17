@@ -92,6 +92,12 @@ You can use `nothrow` to catch exitcode
   const { exitCode } = await $`exit 1`.nothrow
 ```
 
+You can use `quiet to omit stdout output
+
+```js
+  await $`node --version`.
+```
+
 ### `ProcessPromise`
 
 ```ts
@@ -101,6 +107,7 @@ class ProcessPromise<T> extends Promise<T> {
   readonly stderr: Readable
   readonly exitCode: Promise<number>
   readonly nothrow: this
+  readonly quiet: this
   pipe(dest): ProcessPromise<T>
   kill(signal = 'SIGTERM'): Promise<void>
 }
