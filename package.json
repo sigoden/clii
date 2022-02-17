@@ -22,7 +22,7 @@
     "lint": "eslint .",
     "test": "jest --detectOpenHandles",
     "clean": "rimraf dist",
-    "build": "tsc && cd dist && replace 'from \"(\\.[^\"]*)\"' 'from \"$1.js\"' * -r --include=\"*.js\"",
+    "build": "tsc && cd dist && replace 'from \"(\\.[^\"]+)\"' 'from \"$1.js\"' * -r --include=\"*.js\"",
     "prepublishOnly": "npm run -s clean && npm run -s build"
   },
   "dependencies": {

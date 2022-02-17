@@ -16,12 +16,6 @@ export async function testEnvVar() {
   assert(foo.stdout === "foo\n");
 }
 
-// Env vars is safe to pass
-export async function testEnvVar2() {
-  process.env.FOO = "hi; exit 1";
-  await $`echo $FOO`;
-}
-
 // Undefined and empty string correctly quoted
 export async function testQuoteEmpty() {
   $`echo ${undefined}`;
@@ -88,7 +82,7 @@ export async function testPipeFail() {
 }
 
 // The pipe() throws if already resolved
-export async function testPipeAgainThrow() {
+export async function testPipeTwice() {
   let out,
     p = $`echo "Hello"`;
   await p;
@@ -141,43 +135,9 @@ export async function testKill() {
   await p;
 }
 
-// require() is working in ESM
-export async function testRequire() {
-  const { name, version } = require("../package.json");
-  assert(typeof name === "string");
-  console.log(chalk.black.bgYellowBright(` ${name} version is ${version} `));
-}
-
-// cd() works with relative paths.
-export async function testCd() {
-  try {
-    fs.mkdirpSync("/tmp/cmru-cd-test/one/two");
-    cd("/tmp/cmru-cd-test/one/two");
-    cd("..");
-    cd("..");
-    let pwd = (await $`pwd`).stdout.trim();
-    assert.equal(path.basename(pwd), "cmru-cd-test");
-  } finally {
-    fs.rmSync("/tmp/cmru-cd-test", { recursive: true });
-    cd(rootDir);
-  }
-}
-
-// ls() works
-export async function testLs() {
-  const files = await ls(".");
-  assert(files.length > 0);
-}
-
-// which() works
-export async function testWhich() {
-  await which("node");
-}
-
 export default async function () {
   await testStdout();
   await testEnvVar();
-  await testEnvVar2();
   await testQuoteEmpty();
   await testQuoteSpace();
   await testArgToString();
@@ -185,13 +145,9 @@ export default async function () {
   await testPipe();
   await testPipeFail();
   await testProcessoutError();
-  await testPipeAgainThrow();
+  await testPipeTwice();
   await testExitCode();
   await testNoThrow();
   await testKill();
-  await testRequire();
-  await testCd();
-  await testLs();
-  await testWhich();
   console.log(chalk.greenBright(" 🍺 Success!"));
 }
