@@ -17,4 +17,5 @@ declare global {
   let fs: typeof index.fs;
   let os: typeof index.os;
   let path: typeof index.path;
+  let yaml: typeof index.yaml;
 }

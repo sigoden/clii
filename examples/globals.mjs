@@ -41,6 +41,10 @@ export async function testWhich() {
   assert(nodePath.length > 0);
 }
 
+export async function testYaml() {
+  assert(yaml.parse("foo: bar").foo, "bar");
+}
+
 export default async function () {
   await testPolyfill();
   await testRequire();
@@ -48,5 +52,6 @@ export default async function () {
   await testCd();
   await testLs();
   await testWhich();
+  await testYaml();
   console.log(chalk.greenBright(" 🍺 Success!"));
 }

@@ -3,6 +3,7 @@ import fs from "fs-extra";
 import { globby, Options as LsOptions } from "globby";
 import { promisify } from "util";
 import os from "os";
+import yaml from "yaml";
 import path from "path";
 import { createInterface } from "readline";
 import { default as whichDefault, AsyncOptions as WhichOptions } from "which";
@@ -14,7 +15,7 @@ import { $ } from "./exec";
 
 export * from "./exec";
 
-export { chalk, fs, os, path };
+export { chalk, fs, os, path, yaml };
 
 export const $config = {
   verbose: false,
@@ -111,5 +112,6 @@ export function registerGlobals() {
     fs,
     os,
     path,
+    yaml,
   });
 }

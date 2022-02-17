@@ -17,6 +17,7 @@
     - [`fs` package](#fs-package)
     - [`os` package](#os-package)
     - [`path` package](#path-package)
+    - [`yaml` package](#yaml-package)
   - [Configuration](#configuration)
     - [`$config.verbose`](#configverbose)
     - [`$config.quiet`](#configquiet)
@@ -36,6 +37,12 @@ Or import globals explicitly (for better autocomplete in VS Code).
 
 ```js
 import 'cmru/globals'
+```
+
+or
+
+```js
+/// <reference path="path-to-global-node_modules/cmru/dist/globals.d.ts" />
 ```
 
 ## ``$`command` ``
@@ -223,6 +230,14 @@ await $`cd ${os.homedir()} && mkdir example`
 ### `path` package
 
 The [path](https://nodejs.org/api/path.html) package.
+
+### `yaml` package
+
+The [yaml](https://www.npmjs.com/package/yaml) package.
+
+```js
+console.log(yaml.parse('foo: bar').foo)
+```
 
 ## Configuration
 ### `$config.verbose`

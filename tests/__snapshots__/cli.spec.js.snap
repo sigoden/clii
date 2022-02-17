@@ -68,6 +68,7 @@ Commands:
   main.js testCd
   main.js testLs
   main.js testWhich
+  main.js testYaml
   main.js default                                                      [default]
 
 Options:
