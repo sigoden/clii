@@ -1,8 +1,10 @@
+import { Arguments } from "yargs";
 import * as index from "./index";
 
 declare global {
   let $: typeof index.$;
   let $config: typeof index.$config;
+  let argv: Arguments<any>;
   // functions
   let cd: typeof index.cd;
   let ls: typeof index.ls;

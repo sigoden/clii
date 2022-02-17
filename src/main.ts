@@ -102,6 +102,7 @@ async function main() {
       },
       async (argv) => {
         try {
+          Object.assign(global, { argv });
           $config.verbose = !!argv["verbose"];
           $config.quiet = !!argv["quiet"];
           try {
@@ -188,7 +189,7 @@ async function loadScript(argv: Record<string, any>): Promise<Script> {
     const __filename = pathResolve(file);
     const __dirname = dirname(__filename);
     const require = createRequire(file);
-    Object.assign(global, { __filename, __dirname, require, argv });
+    Object.assign(global, { __filename, __dirname, require });
     const source = await readFile(file, "utf-8");
     const moduleExports = await import(file);
     const ast = parseAst(source, {

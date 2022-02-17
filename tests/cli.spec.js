@@ -71,6 +71,18 @@ describe("examples - options", () => {
   });
 });
 
+describe("examples - globals", () => {
+  const prefixs = ["-f", resolveRootDir("examples/globals.mjs")];
+  it("render cli", async () => {
+    let result = await cli([...prefixs, "-h"]);
+    expect(result.stdout).toMatchSnapshot();
+  });
+  it("it works", async () => {
+    let result = await cli(prefixs);
+    expect(result.stdout).toMatchSnapshot();
+  });
+});
+
 function resolveRootDir(file) {
   return path.resolve(__dirname, "..", file);
 }

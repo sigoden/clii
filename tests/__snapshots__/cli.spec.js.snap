@@ -42,6 +42,40 @@ exports[`examples - functions task6 works 1`] = `
 "
 `;
 
+exports[`examples - globals it works 1`] = `
+"{
+  _: [],
+  f: '/home/sigo/w/cmru/examples/globals.mjs',
+  file: '/home/sigo/w/cmru/examples/globals.mjs',
+  '$0': '../dist/main.js'
+}
+/tmp/cmru-cd-test
+ 🍺 Success!
+"
+`;
+
+exports[`examples - globals render cli 1`] = `
+"Usage: main.js <cmd> [options]
+
+Commands:
+  main.js testPolyfill  Test __dirname, __filename
+  main.js testRequire
+  main.js testArgv
+  main.js testCd
+  main.js testLs
+  main.js testWhich
+  main.js default                                                      [default]
+
+Options:
+      --version  Show version number                                   [boolean]
+  -f, --file     Specific cmru file               [string] [default: \\"cmru.mjs\\"]
+  -w, --workdir  Specific working directory                             [string]
+      --verbose  Echo command                                          [boolean]
+      --quiet    Suppress all normal output                            [boolean]
+  -h, --help     Show help                                             [boolean]
+"
+`;
+
 exports[`examples - options it works 1`] = `
 "{ str: 'abc', bool: true, num: 3, arr: [ 'x', 'y' ] }
 "

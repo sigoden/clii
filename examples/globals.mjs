@@ -3,7 +3,7 @@ import { strict as assert } from "assert";
 const rootDir = path.resolve(__dirname, "..");
 
 // Test __dirname, __filename
-export async function testVariables() {
+export async function testPolyfill() {
   assert(__dirname.length > 0);
   assert(__filename.length > 0);
 }
@@ -11,6 +11,11 @@ export async function testVariables() {
 export async function testRequire() {
   const { name } = require("../package.json");
   assert(typeof name === "string");
+}
+
+export async function testArgv() {
+  console.log(argv);
+  assert(argv.$0);
 }
 
 export async function testCd() {
@@ -38,8 +43,9 @@ export async function testWhich() {
 }
 
 export default async function () {
-  await testVariables();
+  await testPolyfill();
   await testRequire();
+  await testArgv();
   await testCd();
   await testLs();
   await testWhich();

@@ -18,11 +18,15 @@
     - [`os` package](#os-package)
     - [`path` package](#path-package)
   - [Configuration](#configuration)
+    - [`$config.verbose`](#configverbose)
+    - [`$config.quiet`](#configquiet)
     - [`$config.shell`](#configshell)
     - [`$config.shellArg`](#configshellarg)
   - [Polyfills](#polyfills)
     - [`__filename` & `__dirname`](#__filename--__dirname)
     - [`require()`](#require)
+  - [Misc](#misc)
+    - [`argv`](#argv)
 
 
 > `cmru` globals refer to [`zx`](https://github.com/google/zx)
@@ -220,7 +224,24 @@ await $`cd ${os.homedir()} && mkdir example`
 The [path](https://nodejs.org/api/path.html) package.
 
 ## Configuration
+### `$config.verbose`
 
+Echo commands, can be set with `--verbose`. Default is `false`
+
+```js
+await $`echo hello`
+```
+
+Will print each command as follows
+
+```
+echo hello
+hello
+```
+
+### `$config.quiet`
+
+uppresses all command output if `true`. Default is `false`
 ### `$config.shell`
 
 Specifies what shell is used. Default is `which bash`.
@@ -228,8 +249,6 @@ Specifies what shell is used. Default is `which bash`.
 ```js
 $config.shell = '/usr/bin/bash'
 ```
-
-Or use a CLI argument: `--shell=/bin/bash`
 
 ### `$config.shellArg`
 
@@ -254,3 +273,22 @@ modules, the `require()` function is not defined.
 let {version} = require('./package.json')
 ```
 
+
+## Misc
+
+### `argv`
+
+Argv object.
+
+```
+cmru -f examples/globals.mjs testArgv
+```
+
+```
+{
+  _: [ 'testArgv' ],
+  f: 'examples/globals.mjs',
+  file: 'examples/globals.mjs',
+  '$0': 'cmru'
+}
+```
