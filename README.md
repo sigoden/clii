@@ -2,6 +2,7 @@
 
 cmru is a handy way to save and run project-specific commands in javascript.
 
+![screenshot](https://user-images.githubusercontent.com/4012553/154531110-2403b6ff-4591-4519-81a4-2a8dc88b56e9.png)
 
 ## Install
 
@@ -11,44 +12,49 @@ npm i -g cmru
 
 **Requirement**: Node version >= 16.0.0
 
+## Quick Start
 
-## Quick start
-
-1. create a `cmru.mjs` file in your workspace root directory.
+Once `cmru` is installed and working, create a file named `cmru.mjs` in the root of your project with the following contents
 
 ```js
-// This is options
-export let options = {
-  // Option foo
-  foo: "foo",
+export const settings = {
+  // Default port number
+  port: 3000,
 };
 
-// This is task1
-export async function task1() {
-  await $`pwd`;
+// A command
+export async function cmd1() {
+  const { stdout } = await $`node --version`.quiet;
+  console.log(`node: ${stdout.trim()}, port: ${settings.port}`);
 }
 
 /**
- * This is task2 with parameters
- * @param {string} bar - Argument bar
+ * Another command
+ * @param {Object} options
+ * @param {string} options.foo - Option foo
+ * @param {number} options.bar - Option bar
+ * @param {string} message - Positional param
  */
-export async function task2(bar) {
-  await $`echo ${options.foo} ${bar}`;
+export async function cmd2(options, message) {
+  console.log(JSON.stringify({ options, message }));
 }
 
+export default function () {
+  console.log("no arguments invoke default function");
+}
 ```
 
-2. run `cmru` in workspace root directory.
+When you invoke `cmru` it looks for file `cmru.mjs` in the current directory and upwards, so you can invoke it from any subdirectory of your project.
 
-`cmru` will read `cmru.mjs` and generate subcommands for each export functions and cli options for export options.
+Runing `cmru -h` list available subcommands.
 
 ```
-$ cmru
 Usage: cmru <cmd> [options]
 
 Commands:
-  main.js task1        This is task1
-  main.js task2 <bar>  This is task2 with parameters
+  cmru cmd1                      A command
+  cmru cmd2 <message> [options]  Another command
+  cmru default                                                         [default]
 
 Options:
       --version  Show version number                                   [boolean]
@@ -56,91 +62,58 @@ Options:
   -w, --workdir  Specific working directory                             [string]
       --verbose  Echo command                                          [boolean]
       --quiet    Suppress all normal output                            [boolean]
-      --foo      Option foo                            [string] [default: "foo"]
+      --port     Default port number                    [number] [default: 3000]
   -h, --help     Show help                                             [boolean]
-
-Not enough non-option arguments: got 0, need at least 1
-
-$ cmru task1
-/tmp/test-cmru
-
-$ cmru task2 goo
-foo goo
-
-$ cmru task2 --foo baz goo
-baz goo
 ```
 
-## Exports
-
-### options
-
-```js
-export const options = {
-  // String variable
-  str: "0.1.0",
-  // Boolean variable
-  bool: false,
-  // Number variable
-  num: 3,
-  // Array varialbe
-  arr: [],
-};
+`cmru` reads export variable `settings` then renders cli options
+```
+      --port     Default port number                    [number] [default: 3000]
 ```
 
-`cmru` maps exported options to cli options.
-
+`cmru` reads export functions `cmd1`, `cmd2`, `default` then renders subcommands.
 ```
-      --str      String variable                     [string] [default: "0.1.0"]
-      --bool     Boolean variable                     [boolean] [default: false]
-      --num      Number variable                           [number] [default: 3]
-      --arr      Array varialbe                            [array] [default: []]
-```
-
-### functions
-
-```js
-/**
- * Both parameters and options
- * @param {Object} options
- * @param {string} options.foo - Option foo
- * @param {number} options.bar - Option bar
- * @param {string} pos - Positional param
- */
-export function task6(options, pos) {
-  console.log(options, pos);
-}
-
+Commands:
+  cmru cmd1                  A command
+  cmru cmd2 <pos> [options]  Another command
+  cmru default                                                  [default]
 ```
 
-`cmru` maps exported functions to subcommands.
+Running `cmru` with no arguments will call default function.
 
 ```
-cmru task6 <pos> [options]
+$ cmru 
+no arguments invoke default function
+```
 
-Both parameters and options
+```
+$ cmru cmd1
+node: v16.13.0, port: 3000
+
+$ cmru cmd1 --port 4000
+node: v16.13.0, port: 4000
+
+$ cmru cmd2 --foo abc --bar 123 
+cmru cmd2 <message> [options]
+
+Another command
 
 Positionals:
-  pos  Positional param                                               [required]
+  message  Positional param                                           [required]
 
 Options:
+      --version  Show version number                                   [boolean]
+  -f, --file     Specific cmru file               [string] [default: "cmru.mjs"]
+  -w, --workdir  Specific working directory                             [string]
+      --verbose  Echo command                                          [boolean]
+      --quiet    Suppress all normal output                            [boolean]
+      --port     Default port number                    [number] [default: 3000]
       --foo      Option foo                                             [string]
       --bar      Option bar                                             [number]
-```
+  -h, --help     Show help                                             [boolean]
 
-### default
-
-```js
-export default async function () {
-  console.log("this is default cmd")
-}
-```
-
-call `cmru` without subcommand will run default function.
-
-```sh
-$ cmru
-this is default cmd
+$ cmru -f examples/readme.mjs cmd2 --foo abc --bar 123 'hello world'
+{"options":{"foo":"abc","bar":123},"message":"hello world"}
 ```
 
 ## Globals
