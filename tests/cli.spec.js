@@ -18,6 +18,10 @@ describe("examples - functions", () => {
     let result = await cli([...prefixs, "task4", "a", "b", "c"]);
     expect(result.stdout).toMatchSnapshot();
   });
+  it("task4 works2", async () => {
+    let result = await cli([...prefixs, "task4", "'-a -b -c'", "'-x -y -z'"]);
+    expect(result.stdout).toMatchSnapshot();
+  });
   it("task5 works", async () => {
     let result = await cli([
       ...prefixs,
@@ -32,6 +36,10 @@ describe("examples - functions", () => {
       "--arr",
       "y",
     ]);
+    expect(result.stdout).toMatchSnapshot();
+  });
+  it("task5 works2", async () => {
+    let result = await cli([...prefixs, "task5", "--str", "'-a -b -c'"]);
     expect(result.stdout).toMatchSnapshot();
   });
   it("task6 works", async () => {

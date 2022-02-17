@@ -20,15 +20,16 @@ import {
 import { readFile, stat as fileStat } from "fs/promises";
 import { cd, ProcessOutput, which, $config, registerGlobals } from "./index";
 
-const hideBinArgv = hideBin(process.argv);
+let rawArgv = hideBin(process.argv);
 
 const DEFAULT_FILE = "cmru.mjs";
 
 async function main() {
   registerGlobals();
-  const defaultArgv = yargs(hideBinArgv).parseSync();
+  const defaultArgv = yargs(rawArgv).parseSync();
   const script = await loadScript(defaultArgv);
-  let app = yargs(hideBinArgv)
+  patchRawArgv();
+  let app = yargs(rawArgv)
     .usage("Usage: $0 <cmd> [options]")
     .help()
     .alias("h", "help")
@@ -102,6 +103,7 @@ async function main() {
       },
       async (argv) => {
         try {
+          patchArgv(argv);
           Object.assign(global, { argv });
           $config.verbose = !!argv["verbose"];
           $config.quiet = !!argv["quiet"];
@@ -381,4 +383,37 @@ function isValidTagSpec(spec: CommentSpec): boolean {
     return isValidScalar(type.slice(0, -2));
   }
   return false;
+}
+
+const patchArgMark = "`";
+
+function patchRawArgv() {
+  rawArgv = rawArgv.map((arg) => {
+    if (arg.startsWith("-") && arg.match(/\s/)) {
+      arg = `${patchArgMark}${arg}${patchArgMark}`;
+    }
+    return arg;
+  });
+}
+
+function patchArgv(argv: Record<string, any>) {
+  Object.keys(argv).forEach((name) => {
+    const argValue = argv[name];
+    const isPatched = (value: string) =>
+      typeof value === "string" &&
+      value.startsWith(patchArgMark) &&
+      value.endsWith(patchArgMark);
+    if (typeof argValue === "string") {
+      if (isPatched(argValue)) {
+        argv[name] = argValue.slice(1, -1);
+      }
+    } else if (Array.isArray(argValue)) {
+      argv[name] = argValue.map((value) => {
+        if (isPatched(value)) {
+          return value.slice(1, -1);
+        }
+        return value;
+      });
+    }
+  });
 }

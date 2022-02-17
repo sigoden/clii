@@ -32,8 +32,18 @@ exports[`examples - functions task4 works 1`] = `
 "
 `;
 
+exports[`examples - functions task4 works2 1`] = `
+"-a -b -c -x -y -z
+"
+`;
+
 exports[`examples - functions task5 works 1`] = `
 "{\\"str\\":\\"abc\\",\\"num\\":3,\\"bool\\":true,\\"arr\\":[\\"x\\",\\"y\\"]}
+"
+`;
+
+exports[`examples - functions task5 works2 1`] = `
+"{\\"str\\":\\"-a -b -c\\"}
 "
 `;
 
