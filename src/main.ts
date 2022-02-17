@@ -215,7 +215,9 @@ async function loadScript(argv: Record<string, any>): Promise<Script> {
       }
       const exportItem = moduleExports[name];
       if (typeof exportItem === "function") {
-        const comment = leadingComments ? leadingComments[0] : null;
+        const comment = leadingComments
+          ? leadingComments[leadingComments.length - 1]
+          : null;
         const { description, params } = parseComment(comment);
         if (name === "default") defaultCmd = true;
         receipts.push({
@@ -234,9 +236,9 @@ async function loadScript(argv: Record<string, any>): Promise<Script> {
             ) as ObjectProperty[];
             for (const item of props) {
               const description = item.leadingComments
-                ? item.leadingComments[0].value.trim()
-                : item.trailingComments
-                ? item.trailingComments[0].value.trim()
+                ? item.leadingComments[
+                    item.leadingComments.length - 1
+                  ].value.trim()
                 : "";
               const key = (item.key as Identifier).name;
               const value = exportItem[key];
