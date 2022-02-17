@@ -14,7 +14,6 @@ export async function testRequire() {
 }
 
 export async function testArgv() {
-  console.log(argv);
   assert(argv.$0);
 }
 

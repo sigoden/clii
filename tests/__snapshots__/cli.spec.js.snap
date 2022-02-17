@@ -53,13 +53,7 @@ exports[`examples - functions task6 works 1`] = `
 `;
 
 exports[`examples - globals it works 1`] = `
-"{
-  _: [],
-  f: '/home/sigo/w/cmru/examples/globals.mjs',
-  file: '/home/sigo/w/cmru/examples/globals.mjs',
-  '$0': '../dist/main.js'
-}
-/tmp/cmru-cd-test
+"/tmp/cmru-cd-test
  🍺 Success!
 "
 `;
