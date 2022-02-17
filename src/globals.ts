@@ -5,7 +5,6 @@ import {
   fetch as _fetch,
   question as _question,
   sleep as _sleep,
-  nothrow as _nothrow,
   dotenv as _dotenv,
   chalk as _chalk,
   fs as _fs,
@@ -22,7 +21,6 @@ declare global {
   // let fetch: typeof _fetch;
   let question: typeof _question;
   let sleep: typeof _sleep;
-  let nothrow: typeof _nothrow;
   let dotenv: typeof _dotenv;
 
   let chalk: typeof _chalk;

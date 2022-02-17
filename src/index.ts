@@ -32,7 +32,6 @@ export function registerGlobals() {
     fetch,
     question,
     sleep,
-    nothrow,
     dotenv,
     // modules
     chalk,
@@ -55,7 +54,7 @@ export interface $ {
   quote: (input: string) => string;
 }
 
-export const $ = <$>function (pieces: TemplateStringsArray, ...args: any[]) {
+export const $ = function (pieces: TemplateStringsArray, ...args: any[]) {
   const { verbose, quiet, shell, prefix } = $;
   const __from = new Error().stack?.split(/^\s*at\s/m)[2].trim() || "";
 
@@ -125,7 +124,8 @@ export const $ = <$>function (pieces: TemplateStringsArray, ...args: any[]) {
   };
   setTimeout(promise._run, 0); // Make sure all subprocesses started.
   return promise;
-};
+} as $;
+
 $.shell = which.sync("bash");
 $.prefix = "set -euo pipefail;";
 $.quote = quote;
@@ -169,20 +169,15 @@ export async function fetch(url: RequestInfo, init?: RequestInit) {
   return nodeFetch(url, init);
 }
 
-export function nothrow(promise: ProcessPromise<ProcessOutput>) {
-  promise._nothrow = true;
-  return promise;
-}
-
 export class ProcessPromise<T> extends Promise<T> {
   public child?: ChildProcess;
-  public _nothrow = false;
   public _resolved = false;
   public _inheritStdin = true;
   public _piped = false;
   public _prerun?: () => void;
   public _postrun?: () => void;
   public _run = () => {};
+  public _nothrow = false;
 
   get stdin() {
     this._inheritStdin = false;
@@ -204,6 +199,11 @@ export class ProcessPromise<T> extends Promise<T> {
 
   get exitCode(): Promise<number> {
     return this.then((p: ProcessOutput) => p.exitCode).catch((p) => p.exitCode);
+  }
+
+  get nothrow() {
+    this._nothrow = true;
+    return this;
   }
 
   then(onfulfilled: (v: any) => any, onrejected?: (v: any) => any) {

@@ -141,7 +141,7 @@ export async function testExitCode() {
 
 // nothrow() doesn't throw
 export async function testNoThrow() {
-  let { exitCode } = await nothrow($`exit 42`);
+  let { exitCode } = await $`exit 42`.nothrow;
   assert(exitCode === 42);
 }
 
@@ -175,7 +175,7 @@ export async function testCd() {
 
 // The kill() method works.
 export async function testKill() {
-  let p = nothrow($`sleep 9999`);
+  let p = $`sleep 9999`.nothrow;
   setTimeout(() => {
     p.kill();
   }, 100);

@@ -9,7 +9,6 @@
     - [`fetch()`](#fetch)
     - [`question()`](#question)
     - [`sleep()`](#sleep)
-    - [`nothrow()`](#nothrow)
     - [`dotenv()`](#dotenv)
   - [Packages](#packages)
     - [`chalk` package](#chalk-package)
@@ -72,6 +71,12 @@ try {
   console.log(`Exit code: ${p.exitCode}`)
   console.log(`Error: ${p.stderr}`)
 }
+```
+
+You can use `nothrow` to catch exitcode
+
+```js
+  const { exitCode } = await $`exit 1`.nothrow
 ```
 
 ### `ProcessPromise`
@@ -154,40 +159,6 @@ A wrapper around the `setTimeout` function.
 
 ```js
 await sleep(1000)
-```
-
-### `nothrow()`
-
-Changes behavior of `$` to not throw an exception on non-zero exit codes.
-
-```ts
-function nothrow<P>(p: P): P
-```
-
-Usage:
-
-```js
-await nothrow($`grep something from-file`)
-
-// Inside a pipe():
-
-await $`find ./examples -type f -print0`
-  .pipe(nothrow($`xargs -0 grep something`))
-  .pipe($`wc -l`)
-```
-
-If only the `exitCode` is needed, you can use the next code instead:
-
-```js
-if (await $`[[ -d path ]]`.exitCode == 0) {
-  ...
-}
-
-// Equivalent of:
-
-if ((await nothrow($`[[ -d path ]]`)).exitCode == 0) {
-  ...
-}
 ```
 
 ### `dotenv()`

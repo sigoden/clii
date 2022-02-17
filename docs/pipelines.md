@@ -46,10 +46,10 @@ let greeting = await $`printf "hello"`
 console.log(greeting.stdout)
 ```
 
-Use combinations of `pipe()` and [`nothrow()`](./globals.md#nothrow):
+Use combinations of `pipe()` and `nothrow`
 
 ```js
 await $`find ./examples -type f -print0`
-  .pipe(nothrow($`xargs -0 grep ${'missing' + 'part'}`))
+  .pipe($`xargs -0 grep ${'missing' + 'part'}`.nothrow)
   .pipe($`wc -l`)
 ```
