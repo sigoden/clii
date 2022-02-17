@@ -159,7 +159,7 @@ export async function task1() {
     console.log(await resp.text())
   }
 
-  let pictures = globby.globbySync('content/*.(jpg|png)')
+  let pictures = ls('content/*.(jpg|png)')
 }
 ```
 

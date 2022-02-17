@@ -1,61 +1,34 @@
 import fs from "fs-extra";
-import * as globbyModule from "globby";
+import { globby, Options as LsOptions } from "globby";
 import { ChildProcess } from "child_process";
 import os from "os";
 import path from "path";
 import { promisify, inspect } from "util";
 import { spawn } from "child_process";
 import { createInterface } from "readline";
+import { default as whichDefault, AsyncOptions as WhichOptions } from "which";
 import { default as nodeFetch, RequestInfo, RequestInit } from "node-fetch";
-import which from "which";
 import chalk, { ChalkInstance } from "chalk";
 import psTreeModule from "ps-tree";
 import { default as dotenvDefault, DotenvConfigOptions } from "dotenv";
 
-export { chalk, fs, os, path, which };
+const psTree = promisify(psTreeModule);
+
+export const $config = {
+  verbose: false,
+  quiet: false,
+  shell: "",
+  shellArg: "",
+};
+
+export { chalk, fs, os, path };
+
 export const sleep = promisify(setTimeout);
-export const globby = Object.assign(function globby(...args: string[]) {
-  return globbyModule.globby(args);
-}, globbyModule);
-export const glob = globby;
 export function dotenv(options?: DotenvConfigOptions) {
   dotenvDefault.config(options);
 }
 
-const psTree = promisify(psTreeModule);
-
-export function registerGlobals() {
-  Object.assign(global, {
-    $,
-    // functions
-    cd,
-    fetch,
-    question,
-    sleep,
-    dotenv,
-    // modules
-    chalk,
-    fs,
-    globby,
-    os,
-    path,
-    // alias
-    glob,
-  });
-}
-
-export interface $ {
-  (pieces: TemplateStringsArray, ...args: any[]): ProcessPromise<ProcessOutput>;
-
-  verbose: boolean;
-  quiet: boolean;
-  shell: string;
-  prefix: string;
-  quote: (input: string) => string;
-}
-
-export const $ = function (pieces: TemplateStringsArray, ...args: any[]) {
-  const { verbose, quiet, shell, prefix } = $;
+export function $(pieces: TemplateStringsArray, ...args: any[]) {
   const __from = new Error().stack?.split(/^\s*at\s/m)[2].trim() || "";
 
   let cmd = pieces[0],
@@ -63,9 +36,9 @@ export const $ = function (pieces: TemplateStringsArray, ...args: any[]) {
   while (i < args.length) {
     let s;
     if (Array.isArray(args[i])) {
-      s = args[i].map((x: any) => $.quote(substitute(x))).join(" ");
+      s = args[i].map((x: any) => quote(substitute(x))).join(" ");
     } else {
-      s = $.quote(substitute(args[i]));
+      s = quote(substitute(args[i]));
     }
     cmd += s + pieces[++i];
   }
@@ -76,13 +49,13 @@ export const $ = function (pieces: TemplateStringsArray, ...args: any[]) {
   promise._run = () => {
     if (promise.child) return;
     if (promise._prerun) promise._prerun();
-    if (!quiet && verbose) {
+    if (!$config.quiet && $config.verbose) {
       printCmd(cmd);
     }
 
-    const child = spawn(prefix + cmd, {
+    const child = spawn($config.shellArg + cmd, {
       cwd: process.cwd(),
-      shell: typeof shell === "string" ? shell : true,
+      shell: $config.shell ? $config.shell : true,
       stdio: [promise._inheritStdin ? "inherit" : "pipe", "pipe", "pipe"],
       windowsHide: true,
     });
@@ -108,12 +81,12 @@ export const $ = function (pieces: TemplateStringsArray, ...args: any[]) {
       stderr = "",
       combined = "";
     const onStdout = (data: string) => {
-      if (!quiet) process.stdout.write(data);
+      if (!$config.quiet) process.stdout.write(data);
       stdout += data;
       combined += data;
     };
     const onStderr = (data: string) => {
-      if (!quiet) process.stderr.write(data);
+      if (!$config.quiet) process.stderr.write(data);
       stderr += data;
       combined += data;
     };
@@ -124,16 +97,25 @@ export const $ = function (pieces: TemplateStringsArray, ...args: any[]) {
   };
   setTimeout(promise._run, 0); // Make sure all subprocesses started.
   return promise;
-} as $;
-
-$.shell = which.sync("bash");
-$.prefix = "set -euo pipefail;";
-$.quote = quote;
+}
 
 export function cd(path: string) {
-  if ($.verbose) console.log("$", colorize(`cd ${path}`));
+  if ($config.verbose) console.log("$", colorize(`cd ${path}`));
   process.chdir(path);
 }
+
+export function which(cmd: string, options?: WhichOptions) {
+  if ($config.verbose) {
+    if (typeof options !== "undefined") {
+      console.log("$", colorize(`which ${cmd}`), options);
+    } else {
+      console.log("$", colorize(`which ${cmd}`));
+    }
+  }
+  return whichDefault(cmd);
+}
+
+export { WhichOptions };
 
 export type QuestionOptions = { choices: string[] };
 
@@ -159,7 +141,7 @@ export async function question(query?: string, options?: QuestionOptions) {
 }
 
 export async function fetch(url: RequestInfo, init?: RequestInit) {
-  if ($.verbose) {
+  if ($config.verbose) {
     if (typeof init !== "undefined") {
       console.log("$", colorize(`fetch ${url}`), init);
     } else {
@@ -168,6 +150,19 @@ export async function fetch(url: RequestInfo, init?: RequestInit) {
   }
   return nodeFetch(url, init);
 }
+
+export function ls(patterns: string | readonly string[], options?: LsOptions) {
+  if ($config.verbose) {
+    if (typeof options !== "undefined") {
+      console.log("$", colorize(`ls ${patterns}`), options);
+    } else {
+      console.log("$", colorize(`ls ${patterns}`));
+    }
+  }
+  return globby(patterns, options);
+}
+
+export { LsOptions };
 
 export class ProcessPromise<T> extends Promise<T> {
   public child?: ChildProcess;
@@ -298,6 +293,26 @@ export class ProcessOutput extends Error {
     }
 }`;
   }
+}
+
+export function registerGlobals() {
+  Object.assign(global, {
+    $,
+    $config,
+    // functions
+    cd,
+    ls,
+    which,
+    sleep,
+    fetch,
+    question,
+    dotenv,
+    // modules
+    chalk,
+    fs,
+    os,
+    path,
+  });
 }
 
 function printCmd(cmd: string) {

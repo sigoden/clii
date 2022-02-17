@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 
-import yargs, { option } from "yargs";
+import yargs from "yargs";
 import { resolve as pathResolve, dirname } from "path";
 import { createRequire } from "module";
+
 import { hideBin } from "yargs/helpers";
 import { parse as parseAst } from "@babel/parser";
 import {
@@ -17,7 +18,7 @@ import {
   Spec as CommentSpec,
 } from "comment-parser";
 import { readFile, stat as fileStat } from "fs/promises";
-import { registerGlobals, $, cd, ProcessOutput } from "./index";
+import { registerGlobals, cd, ProcessOutput, which } from "./index";
 
 const hideBinArgv = hideBin(process.argv);
 
@@ -101,8 +102,12 @@ async function main() {
       },
       async (argv) => {
         try {
-          $.verbose = !!argv["verbose"];
-          $.quiet = !!argv["quiet"];
+          $config.verbose = !!argv["verbose"];
+          $config.quiet = !!argv["quiet"];
+          try {
+            $config.shell = await which("bash");
+            $config.shellArg = "set -euo pipefail;";
+          } catch {}
           script.updateOptions(argv);
           const args = receipt.params.map((param) => {
             if (param.props?.length > 0) {
@@ -120,7 +125,7 @@ async function main() {
             console.error("Error: " + err.message);
             process.exit(1);
           } else {
-            throw err;
+            console.log(err);
           }
         }
       }

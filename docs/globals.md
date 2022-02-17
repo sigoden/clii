@@ -6,6 +6,8 @@
     - [`ProcessOutput`](#processoutput)
   - [Functions](#functions)
     - [`cd()`](#cd)
+    - [`ls()`](#ls)
+    - [`which()`](#which)
     - [`fetch()`](#fetch)
     - [`question()`](#question)
     - [`sleep()`](#sleep)
@@ -13,13 +15,11 @@
   - [Packages](#packages)
     - [`chalk` package](#chalk-package)
     - [`fs` package](#fs-package)
-    - [`globby` package](#globby-package)
     - [`os` package](#os-package)
     - [`path` package](#path-package)
   - [Configuration](#configuration)
-    - [`$.shell`](#shell)
-    - [`$.prefix`](#prefix)
-    - [`$.quote`](#quote)
+    - [`$config.shell`](#configshell)
+    - [`$config.shellArg`](#configshellarg)
   - [Polyfills](#polyfills)
     - [`__filename` & `__dirname`](#__filename--__dirname)
     - [`require()`](#require)
@@ -122,6 +122,22 @@ cd('/tmp')
 await $`pwd` // outputs /tmp
 ```
 
+### `ls()`
+
+ls files by glob matching.
+
+```js
+let packages = await ls(['package.json', 'packages/*/package.json'])
+let pictures = await ls('content/*.(jpg|png)')
+```
+
+### `which()`
+
+```js
+let bash = await which("bash");
+console.log(bash) // /bin/bash
+```
+
 ### `fetch()`
 
 A wrapper around the [node-fetch](https://www.npmjs.com/package/node-fetch) package.
@@ -191,22 +207,6 @@ The [fs-extra](https://www.npmjs.com/package/fs-extra) package.
 let content = await fs.readFile('./package.json')
 ```
 
-### `globby` package
-
-The [globby](https://github.com/sindresorhus/globby) package.
-
-```js
-let packages = await globby(['package.json', 'packages/*/package.json'])
-
-let pictures = globby.globbySync('content/*.(jpg|png)')
-```
-
-Also, globby available via the `glob` shortcut:
-
-```js
-await $`svgo ${await glob('*.svg')}`
-```
-
 ### `os` package
 
 The [os](https://nodejs.org/api/os.html) package.
@@ -219,34 +219,23 @@ await $`cd ${os.homedir()} && mkdir example`
 
 The [path](https://nodejs.org/api/path.html) package.
 
-```js
-await $`mkdir ${path.join(basedir, 'output')}`
-```
-
 ## Configuration
 
-### `$.shell`
+### `$config.shell`
 
 Specifies what shell is used. Default is `which bash`.
 
 ```js
-$.shell = '/usr/bin/bash'
+$config.shell = '/usr/bin/bash'
 ```
 
 Or use a CLI argument: `--shell=/bin/bash`
 
-### `$.prefix`
+### `$config.shellArg`
 
 Specifies the command that will be prefixed to all commands run.
 
 Default is `set -euo pipefail;`.
-
-Or use a CLI argument: `--prefix='set -e;'`
-
-### `$.quote`
-
-Specifies a function for escaping special characters during 
-command substitution.
 
 ## Polyfills 
 
