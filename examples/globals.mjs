@@ -8,6 +8,10 @@ $config.color = false;
 
 const rootDir = path.resolve(__dirname, "..");
 
+export async function testCmd() {
+  await $`echo hi`;
+}
+
 export async function testConfigVerbose() {
   const oldVerbose = $config.verbose;
   $config.verbose = false;
@@ -73,6 +77,7 @@ export async function testChalk() {
 }
 
 export default async function () {
+  await testCmd();
   await testConfigVerbose();
   await testConfigQuiet();
   await testPolyfill();

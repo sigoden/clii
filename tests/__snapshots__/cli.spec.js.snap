@@ -54,6 +54,7 @@ exports[`examples - functions task6 works 1`] = `
 
 exports[`examples - globals it works 1`] = `
 "hi
+hi
 $ echo hi
 hi
 hi
@@ -65,6 +66,7 @@ exports[`examples - globals render cli 1`] = `
 "Usage: main.js <cmd> [options]
 
 Commands:
+  main.js testCmd
   main.js testConfigVerbose
   main.js testConfigQuiet
   main.js testPolyfill
@@ -112,9 +114,7 @@ Options:
 exports[`global options run with --quiet 1`] = `""`;
 
 exports[`global options run with --verbose 1`] = `
-"$ [92mecho [39mfoo
-foo
-$ [92mecho [39mbar
-bar
+"$ echo hi
+hi
 "
 `;

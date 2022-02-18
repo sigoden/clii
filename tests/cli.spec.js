@@ -92,13 +92,13 @@ describe("examples - globals", () => {
 });
 
 describe("global options", () => {
-  const prefixs = ["-f", resolveRootDir("examples/dotenv.mjs")];
+  const prefixs = ["-f", resolveRootDir("examples/globals.mjs")];
   it("run with --quiet", async () => {
-    let result = await cli(["--quiet", ...prefixs]);
+    let result = await cli(["--quiet", ...prefixs, "testCmd"]);
     expect(result.stdout).toMatchSnapshot();
   });
   it("run with --verbose", async () => {
-    let result = await cli(["--verbose", ...prefixs]);
+    let result = await cli(["--verbose", ...prefixs, "testCmd"]);
     expect(result.stdout).toMatchSnapshot();
   });
 });
