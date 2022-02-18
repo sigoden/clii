@@ -15,19 +15,46 @@ export async function testCmd() {
 export async function testConfigVerbose() {
   const oldVerbose = $config.verbose;
   $config.verbose = false;
-  await $`echo hi`;
+  await $`echo 1`;
   $config.verbose = true;
-  await $`echo hi`;
+  await $`echo 2`;
   $config.verbose = oldVerbose;
 }
 
 export async function testConfigSilent() {
   const oldSilent = $config.silent;
   $config.silent = false;
-  await $`echo hi`;
+  await $`echo 1`;
   $config.silent = true;
-  await $`echo hi`;
+  await $`echo 2`;
   $config.silent = oldSilent;
+}
+
+export async function testConfigFatal() {
+  const oldFatal = $config.fatal;
+
+  $config.fatal = false;
+  shell.cp("this_file_does_not_exist1", "/dev/null"); // throws Error here
+  await $`cp this_file_does_not_exist2 /dev/null`; // throws Error here
+
+  $config.fatal = true;
+  let shellThrows = 0;
+  try {
+    shell.cp("this_file_does_not_exist3", "/dev/null"); // throws Error here
+  } catch (err) {
+    console.log(err.message);
+    shellThrows += 1;
+  }
+  assert(shellThrows, 1);
+
+  let $throws = 0;
+  try {
+    await $`cp this_file_does_not_exist4 /dev/null`; // throws Error here
+  } catch {
+    $throws += 1;
+  }
+  assert($throws, 1);
+  $config.fatal = oldFatal;
 }
 
 export async function testPolyfill() {
@@ -79,6 +106,7 @@ export default async function () {
   await testCmd();
   await testConfigVerbose();
   await testConfigSilent();
+  await testConfigFatal();
   await testPolyfill();
   await testRequire();
   await testArgv();

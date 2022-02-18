@@ -22,8 +22,6 @@ import { ProcessOutput, $config, registerGlobals } from "./index";
 
 let rawArgv = hideBin(process.argv);
 
-const DEFAULT_FILE = "cmru.mjs";
-
 async function main() {
   registerGlobals();
   const defaultArgv = yargs(rawArgv).parseSync();
@@ -40,7 +38,6 @@ async function main() {
     .option("file", {
       alias: "f",
       type: "string",
-      default: DEFAULT_FILE,
       description: "Specific cmru file",
     })
     .option("workdir", {
@@ -292,7 +289,8 @@ async function findScript(argv: Record<string, any>) {
   } else {
     let dir = process.cwd();
     while (true) {
-      checkFiles.push(pathResolve(dir, DEFAULT_FILE));
+      checkFiles.push(pathResolve(dir, "cmrufile.mjs"));
+      checkFiles.push(pathResolve(dir, "Cmrufile.mjs"));
       const parentDir = dirname(dir);
       if (parentDir === dir) {
         break;

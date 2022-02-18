@@ -19,7 +19,7 @@ Commands:
 
 Options:
       --version  Show version number                                   [boolean]
-  -f, --file     Specific cmru file               [string] [default: \\"cmru.mjs\\"]
+  -f, --file     Specific cmru file                                     [string]
   -w, --workdir  Specific working directory                             [string]
       --verbose  Echo command                                          [boolean]
       --silent   Suppress all normal output                            [boolean]
@@ -54,10 +54,11 @@ exports[`examples - functions task6 works 1`] = `
 
 exports[`examples - globals it works 1`] = `
 "hi
-hi
-$ echo hi
-hi
-hi
+1
+$ echo 2
+2
+1
+cp: no such file or directory: this_file_does_not_exist3
 /tmp/cmru-cd-test
 hello
 "
@@ -70,6 +71,7 @@ Commands:
   main.js testCmd
   main.js testConfigVerbose
   main.js testConfigSilent
+  main.js testConfigFatal
   main.js testPolyfill
   main.js testRequire
   main.js testArgv
@@ -82,7 +84,7 @@ Commands:
 
 Options:
       --version  Show version number                                   [boolean]
-  -f, --file     Specific cmru file               [string] [default: \\"cmru.mjs\\"]
+  -f, --file     Specific cmru file                                     [string]
   -w, --workdir  Specific working directory                             [string]
       --verbose  Echo command                                          [boolean]
       --silent   Suppress all normal output                            [boolean]
@@ -100,7 +102,7 @@ exports[`examples - settings render cli 1`] = `
 
 Options:
       --version  Show version number                                   [boolean]
-  -f, --file     Specific cmru file               [string] [default: \\"cmru.mjs\\"]
+  -f, --file     Specific cmru file                                     [string]
   -w, --workdir  Specific working directory                             [string]
       --verbose  Echo command                                          [boolean]
       --silent   Suppress all normal output                            [boolean]

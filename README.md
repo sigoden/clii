@@ -1,13 +1,13 @@
 # Cmru
 
-Cmru is a build tool using javscript. You write plain js functions, cmru automatically generates subcommands.
+Cmru is a make-like build tool that generates informative cli interface.
 
-![screenshot](https://user-images.githubusercontent.com/4012553/154598176-91ee8666-e67c-4d34-88f5-9191dcf1c30f.png)
+You writes plain js functions, cmru automatically generated subcommands with descriptions and options.
 
 - [Cmru](#cmru)
   - [Install](#install)
   - [Quick Start](#quick-start)
-  - [Api](#api)
+  - [Globals](#globals)
     - [``$`command` ``](#command-)
       - [`ProcessPromise`](#processpromise)
         - [nothrow](#nothrow)
@@ -49,11 +49,9 @@ Cmru is a build tool using javscript. You write plain js functions, cmru automat
 npm i -g cmru
 ```
 
-**Requirement**: Node version >= 16.0.0
-
 ## Quick Start
 
-Once `cmru` is installed and working, create a file named `cmru.mjs` in the root of your project with the following contents
+Once `cmru` is installed and working, create a file named `cmrufile.mjs` in the root of your project with the following contents
 
 ```js
 export const settings = {
@@ -63,7 +61,7 @@ export const settings = {
 
 // A command
 export async function cmd1() {
-  await $`npx serve -l ${settings.port}`;
+  console.log(`listening on http://localhost:${settings.port}`);
 }
 
 /**
@@ -78,12 +76,12 @@ export async function cmd2(options, message) {
 }
 
 export default function () {
-  console.log("no arguments invoke default function");
+  console.log("invoke without arguments");
 }
 
 ```
 
-When you invoke `cmru` it looks for file `cmru.mjs` in the current directory and upwards, so you can invoke it from any subdirectory of your project.
+When you invoke `cmru` it looks for file `cmrufile.mjs` in the current directory and upwards, so you can invoke it from any subdirectory of your project.
 
 Runing `cmru -h` list available subcommands.
 
@@ -97,10 +95,10 @@ Commands:
 
 Options:
       --version  Show version number                                   [boolean]
-  -f, --file     Specific cmru file               [string] [default: "cmru.mjs"]
+  -f, --file     Specific cmru file                                     [string]
   -w, --workdir  Specific working directory                             [string]
       --verbose  Echo command                                          [boolean]
-      --silent    Suppress all normal output                            [boolean]
+      --silent   Suppress all normal output                            [boolean]
       --port     Default port number                    [number] [default: 3000]
   -h, --help     Show help                                             [boolean]
 ```
@@ -138,10 +136,10 @@ Positionals:
 
 Options:
       --version  Show version number                                   [boolean]
-  -f, --file     Specific cmru file               [string] [default: "cmru.mjs"]
+  -f, --file     Specific cmru file                                     [string]
   -w, --workdir  Specific working directory                             [string]
       --verbose  Echo command                                          [boolean]
-      --silent    Suppress all normal output                            [boolean]
+      --silent   Suppress all normal output                            [boolean]
       --port     Default port number                    [number] [default: 3000]
       --foo      Option foo                                             [string]
       --bar      Option bar                                             [number]
@@ -151,7 +149,7 @@ $ cmru -f examples/readme.mjs cmd2 --foo abc --bar 123 'hello world'
 {"options":{"foo":"abc","bar":123},"message":"hello world"}
 ```
 
-## Api
+## Globals
 
 Cmru provides some handly functions and modules That are available straight away without any imports.
 
@@ -452,7 +450,6 @@ modules, the `require()` function is not defined.
 ```js
 let {version} = require('./package.json')
 ```
-
 
 ### Misc
 

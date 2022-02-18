@@ -21,7 +21,6 @@ export const $config = Object.assign(shell.config, {
   shell: "",
   shellArg: "",
 });
-$config.fatal = true;
 
 export const sleep = promisify(setTimeout);
 export const cd = shell.cd;
