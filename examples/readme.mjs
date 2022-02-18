@@ -5,8 +5,7 @@ export const settings = {
 
 // A command
 export async function cmd1() {
-  const { stdout } = await $`node --version`.quiet;
-  console.log(`node: ${stdout.trim()}, port: ${settings.port}`);
+  await $`npx serve -l ${settings.port}`;
 }
 
 /**

@@ -1,8 +1,8 @@
 # cmru
 
-cmru is a handy way to save and run project-specific commands in javascript.
+cmru is a command runner that allows you to describe build tasks in javascript.
 
-![screenshot](https://user-images.githubusercontent.com/4012553/154531110-2403b6ff-4591-4519-81a4-2a8dc88b56e9.png)
+![screenshot](https://user-images.githubusercontent.com/4012553/154598176-91ee8666-e67c-4d34-88f5-9191dcf1c30f.png)
 
 ## Install
 
@@ -24,8 +24,7 @@ export const settings = {
 
 // A command
 export async function cmd1() {
-  const { stdout } = await $`node --version`.quiet;
-  console.log(`node: ${stdout.trim()}, port: ${settings.port}`);
+  await $`npx serve -l ${settings.port}`;
 }
 
 /**
@@ -42,6 +41,7 @@ export async function cmd2(options, message) {
 export default function () {
   console.log("no arguments invoke default function");
 }
+
 ```
 
 When you invoke `cmru` it looks for file `cmru.mjs` in the current directory and upwards, so you can invoke it from any subdirectory of your project.
@@ -88,10 +88,10 @@ no arguments invoke default function
 
 ```
 $ cmru cmd1
-node: v16.13.0, port: 3000
+INFO: Accepting connections at http://localhost:3000
 
 $ cmru cmd1 --port 4000
-node: v16.13.0, port: 4000
+INFO: Accepting connections at http://localhost:4000
 
 $ cmru cmd2 --foo abc --bar 123 
 cmru cmd2 <message> [options]
@@ -121,21 +121,21 @@ $ cmru -f examples/readme.mjs cmd2 --foo abc --bar 123 'hello world'
 All functions ($, cd, fetch...) and modules (chalk, fs, path...) are available straight away without any imports.
 
 ```js
-export async function task1() {
-  await $`cat package.json | grep name`
+export async function task() {
+  await $`mkdir -p dist`;
 
   await Promise.all([
     $`sleep 1; echo 1`,
     $`sleep 2; echo 2`,
     $`sleep 3; echo 3`,
-  ])
+  ]);
 
-  let resp = await fetch('http://wttr.in')
+  let resp = await fetch("https://httpbin.org/ip");
   if (resp.ok) {
-    console.log(await resp.text())
+    console.log(await resp.text());
   }
 
-  let pictures = ls('content/*.(jpg|png)')
+  let scripts = await ls(["src/**/*.ts"]);
 }
 ```
 

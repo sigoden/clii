@@ -1,8 +1,8 @@
 {
   "name": "cmru",
   "version": "1.1.0",
-  "description": "cmru is a handy way to save and run project-specific commands in javascript.",
-  "keywords": [],
+  "description": "cmru is a command runner that allows you to describe build tasks in javascript.",
+  "keywords": ["cli", "make", "command-runner"],
   "author": "sigoden <sigoden@gmail.com>",
   "license": "MIT",
   "source": "src/index.ts",

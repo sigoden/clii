@@ -3,6 +3,10 @@
 - [Globals](#globals)
   - [``$`command` ``](#command-)
     - [`ProcessPromise`](#processpromise)
+      - [nothrow](#nothrow)
+      - [quiet](#quiet)
+      - [pipe](#pipe)
+      - [kill](#kill)
     - [`ProcessOutput`](#processoutput)
   - [Functions](#functions)
     - [`cd()`](#cd)
@@ -40,7 +44,6 @@ Or import globals explicitly (for better autocomplete in VS Code).
 import 'cmru/globals'
 ```
 
-or
 
 ```js
 /// <reference path="path-to-global-node_modules/cmru/dist/globals.d.ts" />
@@ -48,10 +51,11 @@ or
 
 ## ``$`command` ``
 
-> Idea comes from [`zx`](https://github.com/google/zx)
+Executes a given string. Idea comes from [`zx`](https://github.com/google/zx)
 
-Executes a given string using the `spawn` function from the
-`child_process` package and returns `ProcessPromise<ProcessOutput>`.
+```js
+await $`node --version`
+```
 
 Everything passed through `${...}` will be automatically escaped and quoted.
 
@@ -74,29 +78,7 @@ let flags = [
 await $`git log ${flags}`
 ```
 
-If the executed program returns a non-zero exit code,
-`ProcessOutput` will be thrown.
-
-```js
-try {
-  await $`exit 1`
-} catch (p) {
-  console.log(`Exit code: ${p.exitCode}`)
-  console.log(`Error: ${p.stderr}`)
-}
-```
-
-You can use `nothrow` to catch exitcode
-
-```js
-  const { exitCode } = await $`exit 1`.nothrow
-```
-
-You can use `quiet to omit stdout output
-
-```js
-  await $`node --version`.
-```
+``$`command` `` returns `ProcessPromise<ProcessOutput>`.
 
 ### `ProcessPromise`
 
@@ -113,10 +95,50 @@ class ProcessPromise<T> extends Promise<T> {
 }
 ```
 
+The return type is a `Promise`.
+
+```js
+try {
+  await $`exit 1`
+} catch (p) {
+  console.log(`Exit code: ${p.exitCode}`)
+  console.log(`Error: ${p.stderr}`)
+}
+```
+
+#### nothrow
+
+You can use `nothrow` to catch exitcode other than using `catch`.
+
+```js
+  const { exitCode } = await $`exit 1`.nothrow
+```
+
+#### quiet
+
+You can use `quiet` to suppress normal output.
+
+```js
+const nodeVersion = (await $`node --version`.quiet).stdout.trim();
+```
+
+#### pipe
+
 The `pipe()` method can be used to redirect stdout:
 
 ```js
 await $`cat file.txt`.pipe(process.stdout)
+```
+
+#### kill
+
+The `pipe()` method can be used to kill spwan the child process.
+
+```js
+let p = $`sleep 9999`.nothrow;
+setTimeout(() => {
+  p.kill();
+}, 5000);
 ```
 
 Read more about [pipelines](./pipelines.md).
@@ -309,15 +331,13 @@ let {version} = require('./package.json')
 
 Argv object.
 
-```
-cmru -f examples/globals.mjs testArgv
-```
-
-```
-{
-  _: [ 'testArgv' ],
-  f: 'examples/globals.mjs',
-  file: 'examples/globals.mjs',
-  '$0': 'cmru'
-}
+```ts
+type Arguments<T = {}> = T & {
+    /** Non-option arguments */
+    _: Array<string | number>;
+    /** The script name or node command */
+    $0: string;
+    /** All remaining options */
+    [argName: string]: unknown;
+};
 ```

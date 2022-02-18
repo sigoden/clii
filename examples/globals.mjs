@@ -1,3 +1,7 @@
+#!/usr/bin/env cmru -f
+
+/// <reference path="../src/globals.ts" />
+
 import { strict as assert } from "assert";
 
 const rootDir = path.resolve(__dirname, "..");

@@ -8,7 +8,7 @@ export async function test(args = "") {
 
 /**
  * Lint js/ts
- * @param {Object} [options]
+ * @param {Object} options
  * @param {boolean} [options.fix] - Fix lint error
  */
 export async function lint(options = {}) {
@@ -17,14 +17,4 @@ export async function lint(options = {}) {
     args.push("--fix");
   }
   await $`npx eslint . ${args}`;
-}
-
-/**
- * Commit git message after lint
- * @param {string} message - Commit message
- * @param {string} [args] - Extra git commit options
- */
-export async function commit(message, args = "") {
-  await lint();
-  await $`git commit ${args.split(" ")} -m ${message}`;
 }
