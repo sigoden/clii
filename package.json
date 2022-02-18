@@ -1,7 +1,7 @@
 {
   "name": "cmru",
   "version": "1.2.0",
-  "description": "Cmru is a make-like build tool using javscript",
+  "description": "Cmru is a make-like build tool.",
   "keywords": [
     "cli",
     "make",

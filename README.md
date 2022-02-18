@@ -1,8 +1,8 @@
 # Cmru
 
-Cmru is a make-like build tool that generates informative cli interface.
+Cmru is a make-like build tool.
 
-You writes plain js functions, cmru automatically generated subcommands with descriptions and options.
+You writes plain js functions, cmru automatically generated subcommands/tasks.
 
 - [Cmru](#cmru)
   - [Install](#install)
