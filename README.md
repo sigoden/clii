@@ -1,8 +1,46 @@
-# cmru
+# Cmru
 
-cmru is a command runner that allows you to describe commands with javascript.
+Cmru is a build tool using javscript. You write plain js functions, cmru automatically generates subcommands.
 
 ![screenshot](https://user-images.githubusercontent.com/4012553/154598176-91ee8666-e67c-4d34-88f5-9191dcf1c30f.png)
+
+- [Cmru](#cmru)
+  - [Install](#install)
+  - [Quick Start](#quick-start)
+  - [Documents](#documents)
+    - [``$`command` ``](#command-)
+      - [`ProcessPromise`](#processpromise)
+        - [nothrow](#nothrow)
+        - [quiet](#quiet)
+        - [pipe](#pipe)
+        - [kill](#kill)
+      - [`ProcessOutput`](#processoutput)
+    - [Functions](#functions)
+      - [`cd()`](#cd)
+      - [`ls()`](#ls)
+      - [`which()`](#which)
+      - [`fetch()`](#fetch)
+      - [`question()`](#question)
+      - [`sleep()`](#sleep)
+      - [`dotenv()`](#dotenv)
+    - [Packages](#packages)
+      - [`chalk` package](#chalk-package)
+      - [`fs` package](#fs-package)
+      - [`os` package](#os-package)
+      - [`path` package](#path-package)
+      - [`yaml` package](#yaml-package)
+    - [Configuration](#configuration)
+      - [`$config.verbose`](#configverbose)
+      - [`$config.quiet`](#configquiet)
+      - [`$config.shell`](#configshell)
+      - [`$config.shellArg`](#configshellarg)
+      - [`$config.color`](#configcolor)
+    - [Polyfills](#polyfills)
+      - [`__filename` & `__dirname`](#__filename--__dirname)
+      - [`require()`](#require)
+    - [Misc](#misc)
+      - [`argv`](#argv)
+  - [License](#license)
 
 ## Install
 
@@ -66,12 +104,12 @@ Options:
   -h, --help     Show help                                             [boolean]
 ```
 
-`cmru` reads export variable `settings` then renders cli options
+`cmru` generate custom cli options for exported variable `settings`.
 ```
       --port     Default port number                    [number] [default: 3000]
 ```
 
-`cmru` reads export functions `cmd1`, `cmd2`, `default` then renders subcommands.
+`cmru` generate subcommands from for each exported functions `cmd1`, `cmd2`, `default`.
 ```
 Commands:
   cmru cmd1                  A command
@@ -79,14 +117,10 @@ Commands:
   cmru default                                                  [default]
 ```
 
-Running `cmru` with no arguments will call default function.
-
 ```
 $ cmru 
 no arguments invoke default function
-```
 
-```
 $ cmru cmd1
 INFO: Accepting connections at http://localhost:3000
 
@@ -116,30 +150,313 @@ $ cmru -f examples/readme.mjs cmd2 --foo abc --bar 123 'hello world'
 {"options":{"foo":"abc","bar":123},"message":"hello world"}
 ```
 
-## Globals
+## Documents
 
-All functions ($, cd, fetch...) and modules (chalk, fs, path...) are available straight away without any imports.
+Cmru provides some handly functions and packages That are available straight away without any imports.
+
+For better autocomplete in editor like vscode. you can manualy import with: 
 
 ```js
-export async function task() {
-  await $`mkdir -p dist`;
+import 'cmru/globals'
+```
+or with triple-slash directives.
 
-  await Promise.all([
-    $`sleep 1; echo 1`,
-    $`sleep 2; echo 2`,
-    $`sleep 3; echo 3`,
-  ]);
+```js
+/// <reference path="<path-to-cmru-module>/dist/globals.d.ts" />
+```
 
-  let resp = await fetch("https://httpbin.org/ip");
-  if (resp.ok) {
-    console.log(await resp.text());
-  }
+### ``$`command` ``
 
-  let scripts = await ls(["src/**/*.ts"]);
+Executes a given string. Idea comes from [`zx`](https://github.com/google/zx)
+
+```js
+await $`node --version`
+```
+
+Everything passed through `${...}` will be automatically escaped and quoted.
+
+```js
+let name = 'foo & bar'
+await $`mkdir ${name}`
+```
+
+**There is no need to add extra quotes.** Read more about it in 
+[quotes](./docs/quotes.md).
+
+You can pass an array of arguments if needed:
+
+```js
+let flags = [
+  '--oneline',
+  '--decorate',
+  '--color',
+]
+await $`git log ${flags}`
+```
+
+``$`command` `` returns `ProcessPromise<ProcessOutput>`.
+
+#### `ProcessPromise`
+
+```ts
+class ProcessPromise<T> extends Promise<T> {
+  readonly stdin: Writable
+  readonly stdout: Readable
+  readonly stderr: Readable
+  readonly exitCode: Promise<number>
+  readonly nothrow: this
+  readonly quiet: this
+  pipe(dest): ProcessPromise<T>
+  kill(signal = 'SIGTERM'): Promise<void>
 }
 ```
 
-see [globals](https://github.com/sigoden/cmru/blob/main/docs/globals.md) for details.
+The return type is a `Promise`.
+
+```js
+try {
+  await $`exit 1`
+} catch (p) {
+  console.log(`Exit code: ${p.exitCode}`)
+  console.log(`Error: ${p.stderr}`)
+}
+```
+
+##### nothrow
+
+You can use `nothrow` to catch exitcode other than using `catch`.
+
+```js
+  const { exitCode } = await $`exit 1`.nothrow
+```
+
+##### quiet
+
+You can use `quiet` to suppress normal output.
+
+```js
+const nodeVersion = (await $`node --version`.quiet).stdout.trim();
+```
+
+##### pipe
+
+The `pipe()` method can be used to redirect stdout:
+
+```js
+await $`cat file.txt`.pipe(process.stdout)
+```
+
+##### kill
+
+The `pipe()` method can be used to kill spwan the child process.
+
+```js
+let p = $`sleep 9999`.nothrow;
+setTimeout(() => {
+  p.kill();
+}, 5000);
+```
+
+Read more about [pipelines](./docs/pipelines.md).
+
+#### `ProcessOutput`
+
+```ts
+class ProcessOutput {
+  readonly stdout: string
+  readonly stderr: string
+  readonly exitCode: number
+  toString(): string
+}
+```
+
+### Functions
+
+#### `cd()`
+
+Changes the current working directory.
+
+```js
+cd('/tmp')
+await $`pwd` // outputs /tmp
+```
+
+#### `ls()`
+
+ls files by glob matching.
+
+```js
+let packages = await ls(['package.json', 'packages/*/package.json'])
+let pictures = await ls('content/*.(jpg|png)')
+```
+
+#### `which()`
+
+```js
+let bash = await which("bash");
+console.log(bash) // /bin/bash
+```
+
+#### `fetch()`
+
+A wrapper around the [node-fetch](https://www.npmjs.com/package/node-fetch) package.
+
+```js
+let resp = await fetch('http://wttr.in')
+if (resp.ok) {
+  console.log(await resp.text())
+}
+```
+
+#### `question()`
+
+A wrapper around the [readline](https://nodejs.org/api/readline.html) package.
+
+Usage:
+
+```js
+let bear = await question('What kind of bear is best? ')
+let token = await question('Choose env variable: ', {
+  choices: Object.keys(process.env)
+})
+```
+
+In second argument, array of choices for Tab autocompletion can be specified.
+  
+```ts
+function question(query?: string, options?: QuestionOptions): Promise<string>
+type QuestionOptions = { choices: string[] }
+```
+
+#### `sleep()`
+
+A wrapper around the `setTimeout` function.
+
+```js
+await sleep(1000)
+```
+
+#### `dotenv()`
+
+Loads environment variables from a `.env` file into `process.env`
+
+```js
+await `dotenv()`
+await `dotenv({ path: '/custom/path/to/.env' })`
+await `dotenv({ override: true })`
+```
+
+### Packages
+
+Following packages are available without importing inside scripts.
+
+#### `chalk` package
+
+The [chalk](https://www.npmjs.com/package/chalk) package.
+
+```js
+console.log(chalk.blue('Hello world!'))
+```
+
+#### `fs` package
+
+The [fs-extra](https://www.npmjs.com/package/fs-extra) package.
+
+```js
+let content = await fs.readFile('./package.json')
+```
+
+#### `os` package
+
+The [os](https://nodejs.org/api/os.html) package.
+
+```js
+await $`cd ${os.homedir()} && mkdir example`
+```
+
+#### `path` package
+
+The [path](https://nodejs.org/api/path.html) package.
+
+#### `yaml` package
+
+The [yaml](https://www.npmjs.com/package/yaml) package.
+
+```js
+console.log(yaml.parse('foo: bar').foo)
+```
+
+### Configuration
+#### `$config.verbose`
+
+Echo commands, can be set with `--verbose`. Default is `false`
+
+```js
+await $`echo hello`
+```
+
+Will print each command as follows
+
+```
+echo hello
+hello
+```
+
+#### `$config.quiet`
+
+uppresses all command output if `true`. Default is `false`
+#### `$config.shell`
+
+Specifies what shell is used. Default is `which bash`.
+
+```js
+$config.shell = '/usr/bin/bash'
+```
+
+#### `$config.shellArg`
+
+Specifies the command that will be prefixed to all commands run.
+
+Default is `set -euo pipefail;`.
+
+#### `$config.color`
+
+Default is `true`. `cmru` will add env var `FORCE_COLOR: '1'` to force the subprocess to add color.
+
+### Polyfills 
+
+#### `__filename` & `__dirname`
+
+In [ESM](https://nodejs.org/api/esm.html) modules, Node.js does not provide
+`__filename` and `__dirname` globals. As such globals are really handy in scripts,
+`cmru` provides these for use in `.mjs` files (when using the `cmru` executable).
+
+#### `require()`
+
+In [ESM](https://nodejs.org/api/modules.html#modules_module_createrequire_filename)
+modules, the `require()` function is not defined.
+
+```js
+let {version} = require('./package.json')
+```
+
+
+### Misc
+
+#### `argv`
+
+Argv object.
+
+```ts
+type Arguments<T = {}> = T & {
+    /** Non-option arguments */
+    _: Array<string | number>;
+    /** The script name or node command */
+    $0: string;
+    /** All remaining options */
+    [argName: string]: unknown;
+};
+```
 
 
 ## License

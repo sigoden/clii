@@ -1,7 +1,7 @@
 {
   "name": "cmru",
   "version": "1.1.1",
-  "description": "cmru is a command runner that allows you to describe commands with javascript",
+  "description": "Cmru is a build tool using javscript",
   "keywords": ["cli", "make", "command-runner"],
   "author": "sigoden <sigoden@gmail.com>",
   "license": "MIT",
