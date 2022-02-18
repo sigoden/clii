@@ -16,13 +16,12 @@ export * from "./exec";
 
 export { chalk, fs, os, path, yaml, shell };
 
-export const $config = {
-  verbose: false,
-  quiet: false,
+export const $config = Object.assign(shell.config, {
   color: true,
   shell: "",
   shellArg: "",
-};
+});
+$config.fatal = true;
 
 export const sleep = promisify(setTimeout);
 export const cd = shell.cd;
@@ -79,7 +78,6 @@ export function glob(
   return globby(patterns, options);
 }
 
-export { GlobOptions };
 export function colorize(cmd: string) {
   return cmd.replace(/^[\w_.-]+(\s|$)/, (substr) => {
     return $config.color ? chalk.greenBright(substr) : substr;

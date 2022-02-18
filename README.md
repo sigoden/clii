@@ -11,7 +11,7 @@ Cmru is a build tool using javscript. You write plain js functions, cmru automat
     - [``$`command` ``](#command-)
       - [`ProcessPromise`](#processpromise)
         - [nothrow](#nothrow)
-        - [quiet](#quiet)
+        - [silent](#silent)
         - [pipe](#pipe)
         - [kill](#kill)
       - [`ProcessOutput`](#processoutput)
@@ -30,11 +30,12 @@ Cmru is a build tool using javscript. You write plain js functions, cmru automat
       - [`yaml`](#yaml)
       - [`shell`](#shell)
     - [`Configuration`](#configuration)
+      - [`fatal`](#fatal)
       - [`verbose`](#verbose)
-      - [`quiet`](#quiet-1)
+      - [`silent`](#silent-1)
+      - [`color`](#color)
       - [`shell`](#shell-1)
       - [`shellArg`](#shellarg)
-      - [`color`](#color)
     - [Polyfills](#polyfills)
       - [`__filename` & `__dirname`](#__filename--__dirname)
       - [`require()`](#require)
@@ -99,7 +100,7 @@ Options:
   -f, --file     Specific cmru file               [string] [default: "cmru.mjs"]
   -w, --workdir  Specific working directory                             [string]
       --verbose  Echo command                                          [boolean]
-      --quiet    Suppress all normal output                            [boolean]
+      --silent    Suppress all normal output                            [boolean]
       --port     Default port number                    [number] [default: 3000]
   -h, --help     Show help                                             [boolean]
 ```
@@ -140,7 +141,7 @@ Options:
   -f, --file     Specific cmru file               [string] [default: "cmru.mjs"]
   -w, --workdir  Specific working directory                             [string]
       --verbose  Echo command                                          [boolean]
-      --quiet    Suppress all normal output                            [boolean]
+      --silent    Suppress all normal output                            [boolean]
       --port     Default port number                    [number] [default: 3000]
       --foo      Option foo                                             [string]
       --bar      Option bar                                             [number]
@@ -205,7 +206,7 @@ class ProcessPromise<T> extends Promise<T> {
   readonly stderr: Readable
   readonly exitCode: Promise<number>
   readonly nothrow: this
-  readonly quiet: this
+  readonly silent: this
   pipe(dest): ProcessPromise<T>
   kill(signal = 'SIGTERM'): Promise<void>
 }
@@ -230,12 +231,12 @@ You can use `nothrow` to catch exitcode other than using `catch`.
   const { exitCode } = await $`exit 1`.nothrow
 ```
 
-##### quiet
+##### silent
 
-You can use `quiet` to suppress normal output.
+You can use `silent` to suppress normal output.
 
 ```js
-const nodeVersion = (await $`node --version`.quiet).stdout.trim();
+const nodeVersion = (await $`node --version`.silent).stdout.trim();
 ```
 
 ##### pipe
@@ -388,9 +389,19 @@ console.log(shell.which("git"))
 
 ### `Configuration`
 
+#### `fatal`
+
+If true, the script will throw a Javascript error when any command encounters an error, Default is `true`
+
+```js
+shell.cp('this_file_does_not_exist', '/dev/null'); // throws Error here
+
+await $`cp this_file_does_not_exist /dev/null`; // throws Error here
+```
+
 #### `verbose`
 
-Echo commands, can be set with `--verbose`. Default is `false`
+Echo commands. It can be set with `--verbose`. Default is `false`
 
 ```js
 await $`echo hello`
@@ -403,9 +414,14 @@ echo hello
 hello
 ```
 
-#### `quiet`
+#### `silent`
 
-uppresses all command output if `true`. Default is `false`
+Supress all command output if `true`. It can be set with `--silent`. Default is `false`
+
+#### `color`
+
+Default is `true`. `cmru` will add env var `FORCE_COLOR: '1'` to force the subprocess to add color.
+
 #### `shell`
 
 Specifies what shell is used. Default is `which bash`.
@@ -419,10 +435,6 @@ $config.shell = '/usr/bin/bash'
 Specifies the command that will be prefixed to all commands run.
 
 Default is `set -euo pipefail;`.
-
-#### `color`
-
-Default is `true`. `cmru` will add env var `FORCE_COLOR: '1'` to force the subprocess to add color.
 
 ### Polyfills 
 

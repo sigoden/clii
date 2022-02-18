@@ -93,8 +93,8 @@ describe("examples - globals", () => {
 
 describe("global options", () => {
   const prefixs = ["-f", resolveRootDir("examples/globals.mjs")];
-  it("run with --quiet", async () => {
-    let result = await cli(["--quiet", ...prefixs, "testCmd"]);
+  it("run with --silent", async () => {
+    let result = await cli(["--silent", ...prefixs, "testCmd"]);
     expect(result.stdout).toMatchSnapshot();
   });
   it("run with --verbose", async () => {

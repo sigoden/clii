@@ -52,11 +52,11 @@ async function main() {
       type: "boolean",
       describe: "Echo command",
     })
-    .option("quiet", {
+    .option("silent", {
       type: "boolean",
       describe: "Suppress all normal output",
     })
-    .conflicts("verbose", "quiet")
+    .conflicts("verbose", "silent")
     .implies("workdir", "file");
   for (const { description, name, type, value } of script.settings) {
     app = app.option(name, {
@@ -107,7 +107,8 @@ async function main() {
           Object.assign(global, { argv });
           if (typeof argv["verbose"] === "boolean")
             $config.verbose = argv["verbose"];
-          if (typeof argv["quiet"] === "boolean") $config.quiet = argv["quiet"];
+          if (typeof argv["silent"] === "boolean")
+            $config.silent = argv["silent"];
           try {
             $config.shell = shell.which("bash").toString();
             $config.shellArg = "set -euo pipefail;";

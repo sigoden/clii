@@ -130,10 +130,10 @@ export async function testNoThrow() {
   assert(exitCode === 42);
 }
 
-// Quiet Quiet suppress normal output
-export async function testQuiet() {
+// Silent Silent suppress normal output
+export async function testSilent() {
   await $`echo abc`;
-  await $`echo def`.quiet;
+  await $`echo def`.silent;
 }
 
 // The kill() method works.
@@ -158,6 +158,6 @@ export default async function () {
   await testPipeTwice();
   await testExitCode();
   await testNoThrow();
-  await testQuiet();
+  await testSilent();
   await testKill();
 }

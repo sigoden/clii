@@ -22,7 +22,7 @@ Options:
   -f, --file     Specific cmru file               [string] [default: \\"cmru.mjs\\"]
   -w, --workdir  Specific working directory                             [string]
       --verbose  Echo command                                          [boolean]
-      --quiet    Suppress all normal output                            [boolean]
+      --silent   Suppress all normal output                            [boolean]
   -h, --help     Show help                                             [boolean]
 "
 `;
@@ -69,7 +69,7 @@ exports[`examples - globals render cli 1`] = `
 Commands:
   main.js testCmd
   main.js testConfigVerbose
-  main.js testConfigQuiet
+  main.js testConfigSilent
   main.js testPolyfill
   main.js testRequire
   main.js testArgv
@@ -85,7 +85,7 @@ Options:
   -f, --file     Specific cmru file               [string] [default: \\"cmru.mjs\\"]
   -w, --workdir  Specific working directory                             [string]
       --verbose  Echo command                                          [boolean]
-      --quiet    Suppress all normal output                            [boolean]
+      --silent   Suppress all normal output                            [boolean]
   -h, --help     Show help                                             [boolean]
 "
 `;
@@ -103,7 +103,7 @@ Options:
   -f, --file     Specific cmru file               [string] [default: \\"cmru.mjs\\"]
   -w, --workdir  Specific working directory                             [string]
       --verbose  Echo command                                          [boolean]
-      --quiet    Suppress all normal output                            [boolean]
+      --silent   Suppress all normal output                            [boolean]
       --str      String variable                     [string] [default: \\"0.1.0\\"]
       --bool     Boolean variable                     [boolean] [default: false]
       --num      Number variable                           [number] [default: 3]
@@ -112,7 +112,7 @@ Options:
 "
 `;
 
-exports[`global options run with --quiet 1`] = `""`;
+exports[`global options run with --silent 1`] = `""`;
 
 exports[`global options run with --verbose 1`] = `
 "$ echo hi

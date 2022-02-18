@@ -21,13 +21,13 @@ export async function testConfigVerbose() {
   $config.verbose = oldVerbose;
 }
 
-export async function testConfigQuiet() {
-  const oldQuiet = $config.quiet;
-  $config.quiet = false;
+export async function testConfigSilent() {
+  const oldSilent = $config.silent;
+  $config.silent = false;
   await $`echo hi`;
-  $config.quiet = true;
+  $config.silent = true;
   await $`echo hi`;
-  $config.quiet = oldQuiet;
+  $config.silent = oldSilent;
 }
 
 export async function testPolyfill() {
@@ -64,7 +64,7 @@ export async function testGlob() {
 }
 
 export async function testShell() {
-  await shell.echo("hello");
+  assert(shell.echo("hello").stdout, "hello");
 }
 
 export async function testYaml() {
@@ -78,7 +78,7 @@ export async function testChalk() {
 export default async function () {
   await testCmd();
   await testConfigVerbose();
-  await testConfigQuiet();
+  await testConfigSilent();
   await testPolyfill();
   await testRequire();
   await testArgv();
