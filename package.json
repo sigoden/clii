@@ -2,7 +2,11 @@
   "name": "cmru",
   "version": "1.1.1",
   "description": "Cmru is a build tool using javscript",
-  "keywords": ["cli", "make", "command-runner"],
+  "keywords": [
+    "cli",
+    "make",
+    "command-runner"
+  ],
   "author": "sigoden <sigoden@gmail.com>",
   "license": "MIT",
   "homepage": "https://github.com/sigoden/cmru",
@@ -37,7 +41,7 @@
     "@types/fs-extra": "^9.0.13",
     "@types/node-fetch": "^3.0.2",
     "@types/ps-tree": "^1.1.2",
-    "@types/which": "^2.0.1",
+    "@types/shelljs": "^0.8.11",
     "chalk": "^5.0.0",
     "comment-parser": "^1.3.0",
     "dotenv": "^16.0.0",
@@ -45,7 +49,7 @@
     "globby": "^13.1.1",
     "node-fetch": "^3.2.0",
     "ps-tree": "^1.2.0",
-    "which": "^2.0.2",
+    "shelljs": "^0.8.5",
     "yaml": "^1.10.2",
     "yargs": "^17.3.1"
   },

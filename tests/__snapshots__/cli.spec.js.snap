@@ -59,6 +59,7 @@ $ echo hi
 hi
 hi
 /tmp/cmru-cd-test
+hello
 "
 `;
 
@@ -73,8 +74,8 @@ Commands:
   main.js testRequire
   main.js testArgv
   main.js testCd
-  main.js testLs
-  main.js testWhich
+  main.js testGlob
+  main.js testShell
   main.js testYaml
   main.js testChalk
   main.js default                                                      [default]

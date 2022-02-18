@@ -1,20 +1,20 @@
 import fs from "fs-extra";
 
-import { globby, Options as LsOptions } from "globby";
+import { globby, Options as GlobOptions } from "globby";
 import { promisify } from "util";
 import os from "os";
 import yaml from "yaml";
 import path from "path";
 import { createInterface } from "readline";
-import { default as whichDefault, AsyncOptions as WhichOptions } from "which";
 import { default as nodeFetch, RequestInfo, RequestInit } from "node-fetch";
 import chalk from "chalk";
+import shell from "shelljs";
 import { default as dotenvDefault, DotenvConfigOptions } from "dotenv";
 import { $ } from "./exec";
 
 export * from "./exec";
 
-export { chalk, fs, os, path, yaml };
+export { chalk, fs, os, path, yaml, shell };
 
 export const $config = {
   verbose: false,
@@ -25,28 +25,11 @@ export const $config = {
 };
 
 export const sleep = promisify(setTimeout);
+export const cd = shell.cd;
 
 export function dotenv(options?: DotenvConfigOptions) {
   dotenvDefault.config(options);
 }
-
-export function cd(path: string) {
-  if ($config.verbose) console.log("$", colorize(`cd ${path}`));
-  process.chdir(path);
-}
-
-export function which(cmd: string, options?: WhichOptions) {
-  if ($config.verbose) {
-    if (typeof options !== "undefined") {
-      console.log("$", colorize(`which ${cmd}`), options);
-    } else {
-      console.log("$", colorize(`which ${cmd}`));
-    }
-  }
-  return whichDefault(cmd);
-}
-
-export { WhichOptions };
 
 export type QuestionOptions = { choices: string[] };
 
@@ -82,19 +65,21 @@ export async function fetch(url: RequestInfo, init?: RequestInit) {
   return nodeFetch(url, init);
 }
 
-export function ls(patterns: string | readonly string[], options?: LsOptions) {
+export function glob(
+  patterns: string | readonly string[],
+  options?: GlobOptions
+) {
   if ($config.verbose) {
     if (typeof options !== "undefined") {
-      console.log("$", colorize(`ls ${patterns}`), options);
+      console.log("$", colorize(`glob ${patterns}`), options);
     } else {
-      console.log("$", colorize(`ls ${patterns}`));
+      console.log("$", colorize(`glob ${patterns}`));
     }
   }
   return globby(patterns, options);
 }
 
-export { LsOptions };
-
+export { GlobOptions };
 export function colorize(cmd: string) {
   return cmd.replace(/^[\w_.-]+(\s|$)/, (substr) => {
     return $config.color ? chalk.greenBright(substr) : substr;
@@ -107,8 +92,7 @@ export function registerGlobals() {
     $config,
     // functions
     cd,
-    ls,
-    which,
+    glob,
     sleep,
     fetch,
     question,
@@ -119,5 +103,6 @@ export function registerGlobals() {
     os,
     path,
     yaml,
+    shell,
   });
 }

@@ -58,14 +58,13 @@ export async function testCd() {
   }
 }
 
-export async function testLs() {
-  const files = await ls(".");
+export async function testGlob() {
+  const files = await glob(".");
   assert(files.length > 0);
 }
 
-export async function testWhich() {
-  const nodePath = await which("node");
-  assert(nodePath.length > 0);
+export async function testShell() {
+  await shell.echo("hello");
 }
 
 export async function testYaml() {
@@ -84,8 +83,8 @@ export default async function () {
   await testRequire();
   await testArgv();
   await testCd();
-  await testLs();
-  await testWhich();
+  await testGlob();
+  await testShell();
   await testYaml();
   await testChalk();
 }

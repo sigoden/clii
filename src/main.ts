@@ -1,10 +1,11 @@
 #!/usr/bin/env node
 
 import yargs from "yargs";
+import { hideBin } from "yargs/helpers";
 import { resolve as pathResolve, dirname } from "path";
 import { createRequire } from "module";
-
-import { hideBin } from "yargs/helpers";
+import shell from "shelljs";
+import fs from "fs-extra";
 import { parse as parseAst } from "@babel/parser";
 import {
   Comment,
@@ -17,9 +18,7 @@ import {
   parse as parseBlockComment,
   Spec as CommentSpec,
 } from "comment-parser";
-import { readFile, stat as fileStat } from "fs/promises";
-import which from "which";
-import { cd, ProcessOutput, $config, registerGlobals } from "./index";
+import { ProcessOutput, $config, registerGlobals } from "./index";
 
 let rawArgv = hideBin(process.argv);
 
@@ -110,7 +109,7 @@ async function main() {
             $config.verbose = argv["verbose"];
           if (typeof argv["quiet"] === "boolean") $config.quiet = argv["quiet"];
           try {
-            $config.shell = await which("bash");
+            $config.shell = shell.which("bash").toString();
             $config.shellArg = "set -euo pipefail;";
           } catch {}
           script.updateSettings(argv);
@@ -189,12 +188,12 @@ async function loadScript(argv: Record<string, any>): Promise<Script> {
   let defaultCmd = false;
   try {
     const { file, workdir } = await findScript(argv);
-    cd(workdir);
+    process.chdir(workdir);
     const __filename = pathResolve(file);
     const __dirname = dirname(__filename);
     const require = createRequire(file);
     Object.assign(global, { __filename, __dirname, require });
-    const source = await readFile(file, "utf-8");
+    const source = await fs.readFile(file, "utf-8");
     const moduleExports = await import(file);
     const ast = parseAst(source, {
       sourceType: "module",
@@ -303,7 +302,7 @@ async function findScript(argv: Record<string, any>) {
   let file: string;
   for (const checkFile of checkFiles) {
     try {
-      const stat = await fileStat(checkFile);
+      const stat = await fs.stat(checkFile);
       if (stat.isFile()) {
         file = checkFile;
         break;

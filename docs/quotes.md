@@ -57,20 +57,20 @@ As everything passed through `${...}` will be escaped, you can't use `~` or glob
 syntax. 
 
 In order for this to work the cmru provides 
-[globby package](./globals.md#globby-package).
+[glob](../README.md#glob).
 
 For instead of this:
 
 ```js
 let files = '~/dev/**/*.md' // wrong
-await $`ls ${files}`
+await $`glob ${files}`
 ```
 
-Use `ls` function and `os` package:
+Use `glob` function and `os` package:
 
 ```js
-let files = await ls(os.homedir() + '/dev/**/*.md')
-await $`ls ${files}`
+let files = await glob(os.homedir() + '/dev/**/*.md')
+await $`glob ${files}`
 ```
 
 

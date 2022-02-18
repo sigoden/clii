@@ -7,7 +7,7 @@ Cmru is a build tool using javscript. You write plain js functions, cmru automat
 - [Cmru](#cmru)
   - [Install](#install)
   - [Quick Start](#quick-start)
-  - [Documents](#documents)
+  - [Api](#api)
     - [``$`command` ``](#command-)
       - [`ProcessPromise`](#processpromise)
         - [nothrow](#nothrow)
@@ -17,24 +17,24 @@ Cmru is a build tool using javscript. You write plain js functions, cmru automat
       - [`ProcessOutput`](#processoutput)
     - [Functions](#functions)
       - [`cd()`](#cd)
-      - [`ls()`](#ls)
-      - [`which()`](#which)
+      - [`glob()`](#glob)
       - [`fetch()`](#fetch)
       - [`question()`](#question)
       - [`sleep()`](#sleep)
       - [`dotenv()`](#dotenv)
-    - [Packages](#packages)
-      - [`chalk` package](#chalk-package)
-      - [`fs` package](#fs-package)
-      - [`os` package](#os-package)
-      - [`path` package](#path-package)
-      - [`yaml` package](#yaml-package)
-    - [Configuration](#configuration)
-      - [`$config.verbose`](#configverbose)
-      - [`$config.quiet`](#configquiet)
-      - [`$config.shell`](#configshell)
-      - [`$config.shellArg`](#configshellarg)
-      - [`$config.color`](#configcolor)
+    - [Modules](#modules)
+      - [`chalk`](#chalk)
+      - [`fs`](#fs)
+      - [`os`](#os)
+      - [`path`](#path)
+      - [`yaml`](#yaml)
+      - [`shell`](#shell)
+    - [`Configuration`](#configuration)
+      - [`verbose`](#verbose)
+      - [`quiet`](#quiet-1)
+      - [`shell`](#shell-1)
+      - [`shellArg`](#shellarg)
+      - [`color`](#color)
     - [Polyfills](#polyfills)
       - [`__filename` & `__dirname`](#__filename--__dirname)
       - [`require()`](#require)
@@ -150,9 +150,9 @@ $ cmru -f examples/readme.mjs cmd2 --foo abc --bar 123 'hello world'
 {"options":{"foo":"abc","bar":123},"message":"hello world"}
 ```
 
-## Documents
+## Api
 
-Cmru provides some handly functions and packages That are available straight away without any imports.
+Cmru provides some handly functions and modules That are available straight away without any imports.
 
 For better autocomplete in editor like vscode. you can manualy import with: 
 
@@ -281,22 +281,14 @@ cd('/tmp')
 await $`pwd` // outputs /tmp
 ```
 
-#### `ls()`
+#### `glob()`
 
 ls files by glob matching.
 
 ```js
-let packages = await ls(['package.json', 'packages/*/package.json'])
-let pictures = await ls('content/*.(jpg|png)')
+let packages = await glob(['package.json', 'packages/*/package.json'])
+let pictures = await glob('content/*.(jpg|png)')
 ```
-
-#### `which()`
-
-```js
-let bash = await which("bash");
-console.log(bash) // /bin/bash
-```
-
 #### `fetch()`
 
 A wrapper around the [node-fetch](https://www.npmjs.com/package/node-fetch) package.
@@ -346,11 +338,11 @@ await `dotenv({ path: '/custom/path/to/.env' })`
 await `dotenv({ override: true })`
 ```
 
-### Packages
+### Modules
 
 Following packages are available without importing inside scripts.
 
-#### `chalk` package
+#### `chalk`
 
 The [chalk](https://www.npmjs.com/package/chalk) package.
 
@@ -358,7 +350,7 @@ The [chalk](https://www.npmjs.com/package/chalk) package.
 console.log(chalk.blue('Hello world!'))
 ```
 
-#### `fs` package
+#### `fs`
 
 The [fs-extra](https://www.npmjs.com/package/fs-extra) package.
 
@@ -366,7 +358,7 @@ The [fs-extra](https://www.npmjs.com/package/fs-extra) package.
 let content = await fs.readFile('./package.json')
 ```
 
-#### `os` package
+#### `os`
 
 The [os](https://nodejs.org/api/os.html) package.
 
@@ -374,11 +366,11 @@ The [os](https://nodejs.org/api/os.html) package.
 await $`cd ${os.homedir()} && mkdir example`
 ```
 
-#### `path` package
+#### `path`
 
 The [path](https://nodejs.org/api/path.html) package.
 
-#### `yaml` package
+#### `yaml`
 
 The [yaml](https://www.npmjs.com/package/yaml) package.
 
@@ -386,8 +378,17 @@ The [yaml](https://www.npmjs.com/package/yaml) package.
 console.log(yaml.parse('foo: bar').foo)
 ```
 
-### Configuration
-#### `$config.verbose`
+#### `shell`
+
+The [shelljs](https://www.npmjs.com/package/shelljs) package.
+
+```js
+console.log(shell.which("git"))
+```
+
+### `Configuration`
+
+#### `verbose`
 
 Echo commands, can be set with `--verbose`. Default is `false`
 
@@ -402,10 +403,10 @@ echo hello
 hello
 ```
 
-#### `$config.quiet`
+#### `quiet`
 
 uppresses all command output if `true`. Default is `false`
-#### `$config.shell`
+#### `shell`
 
 Specifies what shell is used. Default is `which bash`.
 
@@ -413,13 +414,13 @@ Specifies what shell is used. Default is `which bash`.
 $config.shell = '/usr/bin/bash'
 ```
 
-#### `$config.shellArg`
+#### `shellArg`
 
 Specifies the command that will be prefixed to all commands run.
 
 Default is `set -euo pipefail;`.
 
-#### `$config.color`
+#### `color`
 
 Default is `true`. `cmru` will add env var `FORCE_COLOR: '1'` to force the subprocess to add color.
 
