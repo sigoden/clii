@@ -1,11 +1,5 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`examples - dotenv .env file works 1`] = `
-"foo
-bar
-"
-`;
-
 exports[`examples - functions render cli 1`] = `
 "Usage: main.js <cmd> [options]
 
@@ -52,46 +46,6 @@ exports[`examples - functions task6 works 1`] = `
 "
 `;
 
-exports[`examples - globals it works 1`] = `
-"hi
-1
-$ echo 2
-2
-1
-cp: no such file or directory: this_file_does_not_exist3
-/tmp/cmru-cd-test
-hello
-"
-`;
-
-exports[`examples - globals render cli 1`] = `
-"Usage: main.js <cmd> [options]
-
-Commands:
-  main.js testCmd
-  main.js testConfigVerbose
-  main.js testConfigSilent
-  main.js testConfigFatal
-  main.js testPolyfill
-  main.js testRequire
-  main.js testArgv
-  main.js testCd
-  main.js testGlob
-  main.js testShell
-  main.js testYaml
-  main.js testChalk
-  main.js default                                                      [default]
-
-Options:
-      --version  Show version number                                   [boolean]
-  -f, --file     Specific cmru file                                     [string]
-  -w, --workdir  Specific working directory                             [string]
-      --verbose  Echo command                                          [boolean]
-      --silent   Suppress all normal output                            [boolean]
-  -h, --help     Show help                                             [boolean]
-"
-`;
-
 exports[`examples - settings it works 1`] = `
 "{ str: 'abc', bool: true, num: 3, arr: [ 'x', 'y' ] }
 "
@@ -111,13 +65,5 @@ Options:
       --num      Number variable                           [number] [default: 3]
       --arr      Array varialbe                            [array] [default: []]
   -h, --help     Show help                                             [boolean]
-"
-`;
-
-exports[`global options run with --silent 1`] = `""`;
-
-exports[`global options run with --verbose 1`] = `
-"$ echo hi
-hi
 "
 `;

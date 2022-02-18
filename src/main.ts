@@ -4,8 +4,7 @@ import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import { resolve as pathResolve, dirname } from "path";
 import { createRequire } from "module";
-import shell from "shelljs";
-import fs from "fs-extra";
+import fs from "fs/promises";
 import { parse as parseAst } from "@babel/parser";
 import {
   Comment,
@@ -18,12 +17,10 @@ import {
   parse as parseBlockComment,
   Spec as CommentSpec,
 } from "comment-parser";
-import { ProcessOutput, $config, registerGlobals } from "./index";
 
 let rawArgv = hideBin(process.argv);
 
 async function main() {
-  registerGlobals();
   const defaultArgv = yargs(rawArgv).parseSync();
   const script = await loadScript(defaultArgv);
   patchRawArgv();
@@ -101,15 +98,6 @@ async function main() {
       async (argv) => {
         try {
           patchArgv(argv);
-          Object.assign(global, { argv });
-          if (typeof argv["verbose"] === "boolean")
-            $config.verbose = argv["verbose"];
-          if (typeof argv["silent"] === "boolean")
-            $config.silent = argv["silent"];
-          try {
-            $config.shell = shell.which("bash").toString();
-            $config.shellArg = "set -euo pipefail;";
-          } catch {}
           script.updateSettings(argv);
           const args = receipt.params.map((param) => {
             if (param.props?.length > 0) {
@@ -123,12 +111,8 @@ async function main() {
           });
           await receipt.fn(...args);
         } catch (err) {
-          if (err instanceof ProcessOutput) {
-            console.error("Error: " + err.message);
-            process.exit(1);
-          } else {
-            console.log(err);
-          }
+          console.error(err);
+          process.exit(1);
         }
       }
     );

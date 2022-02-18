@@ -1,13 +1,6 @@
 const path = require("path");
 const exec = require("child_process").exec;
 
-describe("examples - dotenv", () => {
-  it(".env file works", async () => {
-    let result = await cli(["-f", resolveRootDir("examples/dotenv.mjs")]);
-    expect(result.stdout).toMatchSnapshot();
-  });
-});
-
 describe("examples - functions", () => {
   const prefixs = ["-f", resolveRootDir("examples/functions.mjs")];
   it("render cli", async () => {
@@ -75,30 +68,6 @@ describe("examples - settings", () => {
       "--arr",
       "y",
     ]);
-    expect(result.stdout).toMatchSnapshot();
-  });
-});
-
-describe("examples - globals", () => {
-  const prefixs = ["-f", resolveRootDir("examples/globals.mjs")];
-  it("render cli", async () => {
-    let result = await cli([...prefixs, "-h"]);
-    expect(result.stdout).toMatchSnapshot();
-  });
-  it("it works", async () => {
-    let result = await cli(prefixs);
-    expect(result.stdout).toMatchSnapshot();
-  });
-});
-
-describe("global options", () => {
-  const prefixs = ["-f", resolveRootDir("examples/globals.mjs")];
-  it("run with --silent", async () => {
-    let result = await cli(["--silent", ...prefixs, "testCmd"]);
-    expect(result.stdout).toMatchSnapshot();
-  });
-  it("run with --verbose", async () => {
-    let result = await cli(["--verbose", ...prefixs, "testCmd"]);
     expect(result.stdout).toMatchSnapshot();
   });
 });
