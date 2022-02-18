@@ -1,10 +1,16 @@
 {
   "name": "cmru",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "cmru is a command runner that allows you to describe build tasks in javascript.",
   "keywords": ["cli", "make", "command-runner"],
   "author": "sigoden <sigoden@gmail.com>",
   "license": "MIT",
+  "homepage": "https://github.com/sigoden/cmru",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sigoden/cmru.git"
+  },
+  "bugs": "https://github.com/sigoden/cmru/issues",
   "source": "src/index.ts",
   "main": "dist/index.js",
   "exports": {

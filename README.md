@@ -139,7 +139,7 @@ export async function task() {
 }
 ```
 
-see [globals](./docs/globals.md) for details.
+see [globals](https://github.com/sigoden/cmru/blob/main/docs/globals.md) for details.
 
 
 ## License
