@@ -1,6 +1,6 @@
 {
   "name": "cmru",
-  "version": "1.3.0",
+  "version": "1.3.1",
   "description": "Cmru is a make-like build tool",
   "keywords": [
     "cli",

@@ -107,7 +107,9 @@ async function main() {
   }
   if (script.error) {
     console.log(await app.getHelp());
-    console.log("\n" + script.error);
+    if (!(defaultArgv.h || defaultArgv.help)) {
+      console.log("\n" + script.error);
+    }
   } else {
     app = app.demandCommand().strictCommands();
   }
@@ -287,7 +289,7 @@ async function findScript(argv: Record<string, any>) {
     } catch {}
   }
   if (!file) {
-    throw new Error("Not found script");
+    throw new Error("Not found cmcufile");
   }
   let workdir: string = argv.workdir || argv.w;
   if (!workdir) {

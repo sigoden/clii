@@ -1,5 +1,33 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`cmru --help 1`] = `
+"Usage: main.js <cmd> [options]
+
+Options:
+      --version  Show version number                                   [boolean]
+  -f, --file     Specific cmru file                                     [string]
+  -w, --workdir  Specific working directory                             [string]
+      --verbose  Echo command                                          [boolean]
+      --silent   Suppress all normal output                            [boolean]
+  -h, --help     Show help                                             [boolean]
+"
+`;
+
+exports[`cmru no arguments 1`] = `
+"Usage: main.js <cmd> [options]
+
+Options:
+      --version  Show version number                                   [boolean]
+  -f, --file     Specific cmru file                                     [string]
+  -w, --workdir  Specific working directory                             [string]
+      --verbose  Echo command                                          [boolean]
+      --silent   Suppress all normal output                            [boolean]
+  -h, --help     Show help                                             [boolean]
+
+Error: Not found cmcufile
+"
+`;
+
 exports[`examples - functions render cli 1`] = `
 "Usage: main.js <cmd> [options]
 

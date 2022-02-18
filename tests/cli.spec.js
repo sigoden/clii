@@ -1,6 +1,17 @@
 const path = require("path");
 const exec = require("child_process").exec;
 
+describe("cmru", () => {
+  it("no arguments", async () => {
+    let result = await cli([]);
+    expect(result.stdout).toMatchSnapshot();
+  });
+  it("--help", async () => {
+    let result = await cli(["-h"]);
+    expect(result.stdout).toMatchSnapshot();
+  });
+});
+
 describe("examples - functions", () => {
   const prefixs = ["-f", resolveRootDir("examples/functions.mjs")];
   it("render cli", async () => {
