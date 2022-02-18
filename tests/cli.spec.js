@@ -8,15 +8,17 @@ describe("examples - functions", () => {
     expect(result.stdout).toMatchSnapshot();
   });
   it("task4 works", async () => {
-    let result = await cli([...prefixs, "task4", "a", "b", "c"]);
+    let result = await cli([...prefixs, "task4", "-h"]);
     expect(result.stdout).toMatchSnapshot();
-  });
-  it("task4 works2", async () => {
-    let result = await cli([...prefixs, "task4", "'-a -b -c'", "'-x -y -z'"]);
-    expect(result.stdout).toMatchSnapshot();
+    let result2 = await cli([...prefixs, "task4", "a", "b", "c"]);
+    expect(result2.stdout).toMatchSnapshot();
+    let result3 = await cli([...prefixs, "task4", "'-a -b -c'", "'-x -y -z'"]);
+    expect(result3.stdout).toMatchSnapshot();
   });
   it("task5 works", async () => {
-    let result = await cli([
+    let result = await cli([...prefixs, "task5", "-h"]);
+    expect(result.stdout).toMatchSnapshot();
+    let result2 = await cli([
       ...prefixs,
       "task5",
       "--str",
@@ -29,14 +31,14 @@ describe("examples - functions", () => {
       "--arr",
       "y",
     ]);
-    expect(result.stdout).toMatchSnapshot();
-  });
-  it("task5 works2", async () => {
-    let result = await cli([...prefixs, "task5", "--str", "'-a -b -c'"]);
-    expect(result.stdout).toMatchSnapshot();
+    expect(result2.stdout).toMatchSnapshot();
+    let result3 = await cli([...prefixs, "task5", "--str", "'-a -b -c'"]);
+    expect(result3.stdout).toMatchSnapshot();
   });
   it("task6 works", async () => {
-    let result = await cli([
+    let result = await cli([...prefixs, "task6", "-h"]);
+    expect(result.stdout).toMatchSnapshot();
+    let result2 = await cli([
       ...prefixs,
       "task6",
       "--foo",
@@ -45,7 +47,13 @@ describe("examples - functions", () => {
       "123",
       "ooo",
     ]);
+    expect(result2.stdout).toMatchSnapshot();
+  });
+  it("task7 works", async () => {
+    let result = await cli([...prefixs, "task7", "-h"]);
     expect(result.stdout).toMatchSnapshot();
+    let result2 = await cli([...prefixs, "task7", "--select", "x", "dev", "1"]);
+    expect(result2.stdout).toMatchSnapshot();
   });
 });
 

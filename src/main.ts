@@ -13,10 +13,7 @@ import {
   ObjectProperty,
   VariableDeclaration,
 } from "@babel/types";
-import {
-  parse as parseBlockComment,
-  Spec as CommentSpec,
-} from "comment-parser";
+import { parse as parseBlockComment } from "comment-parser";
 
 let rawArgv = hideBin(process.argv);
 
@@ -52,12 +49,8 @@ async function main() {
     })
     .conflicts("verbose", "silent")
     .implies("workdir", "file");
-  for (const { description, name, type, value } of script.settings) {
-    app = app.option(name, {
-      type,
-      default: value,
-      description,
-    });
+  for (const { name, meta } of script.settings) {
+    app = app.option(name, meta as any);
   }
   for (const receipt of script.receipts) {
     let cmd = `${receipt.name}`;
@@ -67,7 +60,7 @@ async function main() {
         cmdWithOptions = true;
       } else {
         const [b, e] = param.optional ? ["[", "]"] : ["<", ">"];
-        if (param.type.endsWith("[]")) {
+        if (param.meta.array) {
           cmd += ` ${b}${param.name}...${e}`;
         } else {
           cmd += ` ${b}${param.name}${e}`;
@@ -81,16 +74,11 @@ async function main() {
       (yargs: yargs.Argv<any>) => {
         for (const param of receipt.params) {
           if (param.props?.length > 0) {
-            for (const { name, description, type } of param.props) {
-              yargs = yargs.option(name, {
-                type: type as any,
-                description,
-              });
+            for (const { name, meta: option } of param.props) {
+              yargs = yargs.option(name, option as any);
             }
-          } else if (param.description) {
-            yargs.positional(param.name, {
-              description: param.description,
-            });
+          } else {
+            yargs.positional(param.name, param.meta as any);
           }
         }
         return yargs;
@@ -149,20 +137,24 @@ interface ReceiptFn {
 
 interface ReceiptParam {
   name: string;
-  description: string;
-  type: YargsOptionType | "object";
   optional: boolean;
   props?: ReceiptParam[];
+  meta: {
+    description: string;
+    type: string;
+    array?: boolean;
+    choices?: any[];
+  };
 }
 
 interface ScriptSetting {
   name: string;
-  description: string;
-  value: any;
-  type: YargsOptionType;
+  meta: {
+    description: string;
+    default: any;
+    type: string;
+  };
 }
-
-type YargsOptionType = "string" | "number" | "boolean" | "array";
 
 async function loadScript(argv: Record<string, any>): Promise<Script> {
   const receipts: Receipt[] = [];
@@ -234,9 +226,11 @@ async function loadScript(argv: Record<string, any>): Promise<Script> {
               if (type) {
                 settings.push({
                   name: key,
-                  description,
-                  value,
-                  type: type as YargsOptionType,
+                  meta: {
+                    description,
+                    default: value,
+                    type,
+                  },
                 });
               }
             }
@@ -313,15 +307,21 @@ function parseComment(comment: Comment) {
     result.description = comment.value.trim();
   } else if (comment.type === "CommentBlock") {
     result.description = block.description.split("\n")[0].trim();
-    const validTags = block.tags.filter(isValidTagSpec);
-    for (const spec of validTags) {
+    for (const spec of block.tags) {
+      if (spec.tag !== "param") continue;
+      const paramType = parseParamType(spec.type);
+      if (!paramType) continue;
       const { name, description, optional } = spec;
-      const type = spec.type.toLowerCase() as any;
+      const type: string = paramType.type;
       const param: ReceiptParam = {
         name,
-        type,
-        description: description.replace(/^(\s*)?-(\s*)?/, ""),
         optional,
+        meta: {
+          type,
+          array: paramType.array === true,
+          choices: paramType.choices,
+          description: description.replace(/^(\s*)?-(\s*)?/, ""),
+        },
       };
       const parts = name.split(".");
       if (parts.length === 1) {
@@ -357,18 +357,63 @@ function parseExportName(declaration: Declaration): string {
   return name;
 }
 
-function isValidTagSpec(spec: CommentSpec): boolean {
-  if (spec.tag !== "param") return;
-  const type = spec.type.toLowerCase();
-  const isValidScalar = (type) =>
-    !!["string", "boolean", "number"].find((x) => x === type);
-  if (isValidScalar(type) || type === "object") {
-    return true;
-  }
+interface ParseParamTypeResult {
+  type: string;
+  array?: boolean;
+  choices?: any[];
+}
+
+function parseParamType(type: string): ParseParamTypeResult {
+  type = type.trim();
   if (type.endsWith("[]")) {
-    return isValidScalar(type.slice(0, -2));
+    const baseType = parseBaseType(type.slice(0, -2));
+    if (!baseType) return null;
+    return {
+      type: baseType as any,
+      array: true,
+    };
   }
-  return false;
+  const baseType = parseBaseType(type);
+  if (baseType) return { type: baseType };
+  if (/^\(.*\)$/.test(type)) {
+    const segements = type
+      .slice(1, -1)
+      .split("|")
+      .map((v) => {
+        if (/^"(.*)"$/.test(v)) {
+          return v.slice(1, -1);
+        }
+        if (/^'(.*)'$/.test(v)) {
+          return v.slice(1, -1);
+        }
+        try {
+          return JSON.parse(v);
+        } catch {}
+      });
+    const firstTyp = typeof segements[0];
+    if (firstTyp === "number" || firstTyp === "string") {
+      if (segements.every((x) => typeof x === firstTyp)) {
+        return {
+          type: firstTyp,
+          choices: segements,
+        };
+      }
+    }
+  }
+  return null;
+}
+
+function parseBaseType(type: string) {
+  switch (type) {
+    case "object":
+    case "Object":
+      return "object";
+    case "string":
+    case "number":
+    case "boolean":
+      return type;
+    default:
+  }
 }
 
 const patchArgMark = "`";

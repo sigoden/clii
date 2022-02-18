@@ -55,3 +55,14 @@ export function task5(options) {
 export function task6(options, pos) {
   console.log(JSON.stringify({ options, pos }));
 }
+
+/**
+ * Parameter with chooices
+ * @param {Object} options
+ * @param {("x"|"y"|"z")} options.select - Double quotes
+ * @param {('dev'|'prod'|'stage')} pos1 - Single quotes
+ * @param {(1|2|3)} pos2 - Number enums
+ */
+export function task7(options, pos1, pos2) {
+  console.log(JSON.stringify({ options, pos1, pos2 }));
+}

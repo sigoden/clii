@@ -4,12 +4,13 @@ exports[`examples - functions render cli 1`] = `
 "Usage: main.js <cmd> [options]
 
 Commands:
-  main.js task1 <foo>            One parameter
-  main.js task2 [foo]            Parameter with default value
-  main.js task3 <arr...>         Array parameter
-  main.js task4 <foo> <bars...>  Multiple parameters
-  main.js task5 [options]        Command with options
-  main.js task6 <pos> [options]  Both parameters and options
+  main.js task1 <foo>                    One parameter
+  main.js task2 [foo]                    Parameter with default value
+  main.js task3 <arr...>                 Array parameter
+  main.js task4 <foo> <bars...>          Multiple parameters
+  main.js task5 [options]                Command with options
+  main.js task6 <pos> [options]          Both parameters and options
+  main.js task7 <pos1> <pos2> [options]  Parameter with chooices
 
 Options:
       --version  Show version number                                   [boolean]
@@ -22,27 +23,110 @@ Options:
 `;
 
 exports[`examples - functions task4 works 1`] = `
+"main.js task4 <foo> <bars...>
+
+Multiple parameters
+
+Positionals:
+  foo   First positonal param                                [string] [required]
+  bars  Second array postional param            [array] [required] [default: []]
+
+Options:
+      --version  Show version number                                   [boolean]
+  -f, --file     Specific cmru file                                     [string]
+  -w, --workdir  Specific working directory                             [string]
+      --verbose  Echo command                                          [boolean]
+      --silent   Suppress all normal output                            [boolean]
+  -h, --help     Show help                                             [boolean]
+"
+`;
+
+exports[`examples - functions task4 works 2`] = `
 "a b,c
 "
 `;
 
-exports[`examples - functions task4 works2 1`] = `
+exports[`examples - functions task4 works 3`] = `
 "-a -b -c -x -y -z
 "
 `;
 
 exports[`examples - functions task5 works 1`] = `
+"main.js task5 [options]
+
+Command with options
+
+Options:
+      --version  Show version number                                   [boolean]
+  -f, --file     Specific cmru file                                     [string]
+  -w, --workdir  Specific working directory                             [string]
+      --verbose  Echo command                                          [boolean]
+      --silent   Suppress all normal output                            [boolean]
+      --str      String option                                          [string]
+      --num      Number option                                          [number]
+      --bool     Number option                                         [boolean]
+      --arr      Array option                                            [array]
+  -h, --help     Show help                                             [boolean]
+"
+`;
+
+exports[`examples - functions task5 works 2`] = `
 "{\\"str\\":\\"abc\\",\\"num\\":3,\\"bool\\":true,\\"arr\\":[\\"x\\",\\"y\\"]}
 "
 `;
 
-exports[`examples - functions task5 works2 1`] = `
+exports[`examples - functions task5 works 3`] = `
 "{\\"str\\":\\"-a -b -c\\"}
 "
 `;
 
 exports[`examples - functions task6 works 1`] = `
+"main.js task6 <pos> [options]
+
+Both parameters and options
+
+Positionals:
+  pos  Positional param                                      [string] [required]
+
+Options:
+      --version  Show version number                                   [boolean]
+  -f, --file     Specific cmru file                                     [string]
+  -w, --workdir  Specific working directory                             [string]
+      --verbose  Echo command                                          [boolean]
+      --silent   Suppress all normal output                            [boolean]
+      --foo      Option foo                                             [string]
+      --bar      Option bar                                             [number]
+  -h, --help     Show help                                             [boolean]
+"
+`;
+
+exports[`examples - functions task6 works 2`] = `
 "{\\"options\\":{\\"foo\\":\\"abc\\",\\"bar\\":123},\\"pos\\":\\"ooo\\"}
+"
+`;
+
+exports[`examples - functions task7 works 1`] = `
+"main.js task7 <pos1> <pos2> [options]
+
+Parameter with chooices
+
+Positionals:
+  pos1  Single quotes      [string] [required] [choices: \\"dev\\", \\"prod\\", \\"stage\\"]
+  pos2  Number enums                      [number] [required] [choices: 1, 2, 3]
+
+Options:
+      --version  Show version number                                   [boolean]
+  -f, --file     Specific cmru file                                     [string]
+  -w, --workdir  Specific working directory                             [string]
+      --verbose  Echo command                                          [boolean]
+      --silent   Suppress all normal output                            [boolean]
+      --select   Double quotes                 [string] [choices: \\"x\\", \\"y\\", \\"z\\"]
+  -h, --help     Show help                                             [boolean]
+"
+`;
+
+exports[`examples - functions task7 works 2`] = `
+"{\\"options\\":{\\"select\\":\\"x\\"},\\"pos1\\":\\"dev\\",\\"pos2\\":1}
 "
 `;
 
