@@ -4,9 +4,28 @@
 
 import { strict as assert } from "assert";
 
+$config.color = false;
+
 const rootDir = path.resolve(__dirname, "..");
 
-// Test __dirname, __filename
+export async function testConfigVerbose() {
+  const oldVerbose = $config.verbose;
+  $config.verbose = false;
+  await $`echo hi`;
+  $config.verbose = true;
+  await $`echo hi`;
+  $config.verbose = oldVerbose;
+}
+
+export async function testConfigQuiet() {
+  const oldQuiet = $config.quiet;
+  $config.quiet = false;
+  await $`echo hi`;
+  $config.quiet = true;
+  await $`echo hi`;
+  $config.quiet = oldQuiet;
+}
+
 export async function testPolyfill() {
   assert(__dirname.length > 0);
   assert(__filename.length > 0);
@@ -54,6 +73,8 @@ export async function testChalk() {
 }
 
 export default async function () {
+  await testConfigVerbose();
+  await testConfigQuiet();
   await testPolyfill();
   await testRequire();
   await testArgv();

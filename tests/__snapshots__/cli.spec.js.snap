@@ -53,7 +53,11 @@ exports[`examples - functions task6 works 1`] = `
 `;
 
 exports[`examples - globals it works 1`] = `
-"/tmp/cmru-cd-test
+"hi
+$ echo hi
+hi
+hi
+/tmp/cmru-cd-test
 "
 `;
 
@@ -61,7 +65,9 @@ exports[`examples - globals render cli 1`] = `
 "Usage: main.js <cmd> [options]
 
 Commands:
-  main.js testPolyfill  Test __dirname, __filename
+  main.js testConfigVerbose
+  main.js testConfigQuiet
+  main.js testPolyfill
   main.js testRequire
   main.js testArgv
   main.js testCd
@@ -106,10 +112,9 @@ Options:
 exports[`global options run with --quiet 1`] = `""`;
 
 exports[`global options run with --verbose 1`] = `
-"$ which bash
-$ echo foo
+"$ [92mecho [39mfoo
 foo
-$ echo bar
+$ [92mecho [39mbar
 bar
 "
 `;

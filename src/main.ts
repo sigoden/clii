@@ -18,7 +18,8 @@ import {
   Spec as CommentSpec,
 } from "comment-parser";
 import { readFile, stat as fileStat } from "fs/promises";
-import { cd, ProcessOutput, which, $config, registerGlobals } from "./index";
+import which from "which";
+import { cd, ProcessOutput, $config, registerGlobals } from "./index";
 
 let rawArgv = hideBin(process.argv);
 
@@ -105,8 +106,9 @@ async function main() {
         try {
           patchArgv(argv);
           Object.assign(global, { argv });
-          $config.verbose = !!argv["verbose"];
-          $config.quiet = !!argv["quiet"];
+          if (typeof argv["verbose"] === "boolean")
+            $config.verbose = argv["verbose"];
+          if (typeof argv["quiet"] === "boolean") $config.quiet = argv["quiet"];
           try {
             $config.shell = await which("bash");
             $config.shellArg = "set -euo pipefail;";

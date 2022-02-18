@@ -1,5 +1,4 @@
-import { $config } from "./index";
-import { colorize } from "./utils";
+import { $config, colorize } from "./index";
 import { ChildProcess, spawn } from "child_process";
 import { promisify, inspect } from "util";
 import chalk, { ChalkInstance } from "chalk";
@@ -210,14 +209,22 @@ export class ProcessOutput extends Error {
   }
 
   [inspect.custom]() {
-    const stringify = (s: string, c: ChalkInstance) =>
-      s.length === 0 ? "''" : c(inspect(s));
+    const stringify = (s: string, c: ChalkInstance, beautify = false) => {
+      if (s.length === 0) {
+        return "''";
+      }
+      const o = beautify ? inspect(s) : s;
+      return $config.color ? c(o) : o;
+    };
     return `ProcessOutput {
-  stdout: ${stringify(this.stdout, chalk.green)},
-  stderr: ${stringify(this.stderr, chalk.red)},
-  exitCode: ${(this.exitCode === 0 ? chalk.green : chalk.red)(this.exitCode)}${
+  stdout: ${stringify(this.stdout, chalk.green, true)},
+  stderr: ${stringify(this.stderr, chalk.red, true)},
+  exitCode: ${stringify(
+    "" + this.exitCode,
+    this.exitCode === 0 ? chalk.green : chalk.red
+  )}${
       exitCodeInfo(this.exitCode)
-        ? chalk.grey(" (" + exitCodeInfo(this.exitCode) + ")")
+        ? stringify(" (" + exitCodeInfo(this.exitCode) + ")", chalk.gray)
         : ""
     }
 }`;

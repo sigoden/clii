@@ -10,7 +10,6 @@ import { default as whichDefault, AsyncOptions as WhichOptions } from "which";
 import { default as nodeFetch, RequestInfo, RequestInit } from "node-fetch";
 import chalk from "chalk";
 import { default as dotenvDefault, DotenvConfigOptions } from "dotenv";
-import { colorize } from "./utils";
 import { $ } from "./exec";
 
 export * from "./exec";
@@ -95,6 +94,12 @@ export function ls(patterns: string | readonly string[], options?: LsOptions) {
 }
 
 export { LsOptions };
+
+export function colorize(cmd: string) {
+  return cmd.replace(/^[\w_.-]+(\s|$)/, (substr) => {
+    return $config.color ? chalk.greenBright(substr) : substr;
+  });
+}
 
 export function registerGlobals() {
   Object.assign(global, {
