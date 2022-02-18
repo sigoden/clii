@@ -444,7 +444,7 @@ In [ESM](https://nodejs.org/api/esm.html) modules, Node.js does not provide
 
 #### `require()`
 
-In [ESM](https://nodejs.org/api/modules.html#modules_module_createrequire_filename)
+In [ESM](https://nodejs.org/api/module.html#modulecreaterequirefilename)
 modules, the `require()` function is not defined.
 
 ```js
