@@ -1,6 +1,6 @@
 # cmru
 
-cmru is a command runner that allows you to describe build tasks in javascript.
+cmru is a command runner that allows you to describe commands with javascript.
 
 ![screenshot](https://user-images.githubusercontent.com/4012553/154598176-91ee8666-e67c-4d34-88f5-9191dcf1c30f.png)
 
