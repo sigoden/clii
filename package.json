@@ -1,7 +1,7 @@
 {
   "name": "cmru",
   "version": "1.4.1",
-  "description": "Build cli applications by automatically converting js modules",
+  "description": "Build cli app by writing plain js functions",
   "keywords": [
     "cli",
     "yargs",

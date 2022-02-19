@@ -1,12 +1,12 @@
 # Cmru
 
-Build cli applications by automatically converting js modules.
+Build cli app by writing plain js functions.
 
 ![examples/readme.mjs](https://user-images.githubusercontent.com/4012553/154787191-87252e55-35ae-4db5-99a7-13c727bdd48c.png)
 
 - [Cmru](#cmru)
   - [Quick Start](#quick-start)
-  - [Guide](#guide)
+  - [How it works](#how-it-works)
   - [Cli](#cli)
   - [License](#license)
 
@@ -19,7 +19,7 @@ npm i cmru
 yarn add cmru
 ```
 
-2. Add follow content to the head of your module file.
+2. Add follow content to your file.
 
 ```js
 import cmru from "cmru";
@@ -27,12 +27,16 @@ import cmru from "cmru";
 cmru(import.meta.url);
 ```
 
-All done. It's a cli app now.
+All done.
 
-## Guide
+`cmru` automatically convert your file to cli app.
+
+
+Try [`examples/readme.mjs`](examples/readme.mjs) yourself.
+
+## How it works
 
 `cmru` parse your ast js module file, generate cli interface according comments and exports semantics.
-
 
 Export variable `settings` will be parsed as global options.
 ```
@@ -69,7 +73,7 @@ export async function cmd2(options, message) {
 ```
 
 ```
-eadme.mjs cmd2 <message> [options]
+readme.mjs cmd2 <message> [options]
 
 Another command
 
@@ -82,13 +86,47 @@ Options:
       --mode     Build mode           [string] [choices: "prod", "dev", "stage"]
 ```
 
+**The export default function will be th default command**. your can run it's without passing any argument.
+
 ## Cli
 
-`cmru` is not only a library for building cli app, but also a task runner / build tool.
+`cmru` is not only a library for building cli app, but also a cli tool itself.
 
-When you invoke `cmru`, it looks for file `cmrufile.mjs` in the current directory and upwards, so you can invoke it from any subdirectory of your project.
+```
+Usage: cmru <cmd> [options]
 
-`cmrufile.mjs` to `cmru` like `npm scripts` to `npm` or `Makefile` to `make`. 
+Options:
+      --version  Show version number                                   [boolean]
+  -f, --file     Specific cmru file                                     [string]
+  -w, --workdir  Specific working directory                             [string]
+  -h, --help     Show help                                             [boolean]
+```
+
+By defualt. `cmru` looks for file `cmrufile.mjs` in the current directory and upwards, so you can invoke it from any subdirectory of your project. 
+
+You can specify a file with option `--file <path-to-script.mjs>`. 
+
+The workdir will be the folder contains the mjs file. Use option `---workdir <path-to-dir>` to change it.
+
+Since `cmru` can run js functions directly from cli, it can be used as task runner / build tool.
+
+For examples, Write the following to the file `cmrufile.mjs`.
+
+```ts
+import sh from "shelljs";
+
+export function lint() {}
+
+/**
+ * @param {("prod"|"dev"|"stage")} mode
+ */
+export function build(mode) {
+  lint();
+  sh.exec(`tsc tsconfig.${mode}.json`);
+}
+```
+
+`cmru lint` will run lint function, `cmru build` will run build function.
 
 ## License
 
