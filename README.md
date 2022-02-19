@@ -1,6 +1,6 @@
 # Clii
 
-Invoke js functions from terminal directly.
+Clii allow you to invoke specific plain js function from terminal directly.
 
 ![examples/demo.mjs](https://user-images.githubusercontent.com/4012553/154807539-f8f554f5-82da-4d3b-8cc8-578cfc661535.png)
 
