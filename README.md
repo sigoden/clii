@@ -1,9 +1,6 @@
 # Cmru
 
-`cmru` is a library for building cli app by writing plain js functions.
-
-`cmru` is a also cli tool for invoking js functions from command line directly.
-
+Build cli app by writing plain js functions. Invoke these functions from cli directly.
 
 ![examples/readme.mjs](https://user-images.githubusercontent.com/4012553/154787191-87252e55-35ae-4db5-99a7-13c727bdd48c.png)
 
@@ -90,6 +87,8 @@ Commands:
 The export default function will be th default command.
 
 ## Cli
+
+`cmru` is not only a library for building cli app, but also a cli tool itself.
 
 ```
 Usage: cmru <cmd> [options]
