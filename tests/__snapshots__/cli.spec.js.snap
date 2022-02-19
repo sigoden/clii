@@ -7,8 +7,6 @@ Options:
       --version  Show version number                                   [boolean]
   -f, --file     Specific cmru file                                     [string]
   -w, --workdir  Specific working directory                             [string]
-      --verbose  Echo command                                          [boolean]
-      --silent   Suppress all normal output                            [boolean]
   -h, --help     Show help                                             [boolean]
 "
 `;
@@ -20,8 +18,6 @@ Options:
       --version  Show version number                                   [boolean]
   -f, --file     Specific cmru file                                     [string]
   -w, --workdir  Specific working directory                             [string]
-      --verbose  Echo command                                          [boolean]
-      --silent   Suppress all normal output                            [boolean]
   -h, --help     Show help                                             [boolean]
 
 Error: Not found cmcufile
@@ -39,13 +35,13 @@ Commands:
   main.js task5 [options]                Command with options
   main.js task6 <pos> [options]          Both parameters and options
   main.js task7 <pos1> <pos2> [options]  Parameter with chooices
+  main.js task8                          Without param comment
+  main.js task9                          Access global argv
 
 Options:
       --version  Show version number                                   [boolean]
   -f, --file     Specific cmru file                                     [string]
   -w, --workdir  Specific working directory                             [string]
-      --verbose  Echo command                                          [boolean]
-      --silent   Suppress all normal output                            [boolean]
   -h, --help     Show help                                             [boolean]
 "
 `;
@@ -63,8 +59,6 @@ Options:
       --version  Show version number                                   [boolean]
   -f, --file     Specific cmru file                                     [string]
   -w, --workdir  Specific working directory                             [string]
-      --verbose  Echo command                                          [boolean]
-      --silent   Suppress all normal output                            [boolean]
   -h, --help     Show help                                             [boolean]
 "
 `;
@@ -88,8 +82,6 @@ Options:
       --version  Show version number                                   [boolean]
   -f, --file     Specific cmru file                                     [string]
   -w, --workdir  Specific working directory                             [string]
-      --verbose  Echo command                                          [boolean]
-      --silent   Suppress all normal output                            [boolean]
       --str      String option                                          [string]
       --num      Number option                                          [number]
       --bool     Number option                                         [boolean]
@@ -120,8 +112,6 @@ Options:
       --version  Show version number                                   [boolean]
   -f, --file     Specific cmru file                                     [string]
   -w, --workdir  Specific working directory                             [string]
-      --verbose  Echo command                                          [boolean]
-      --silent   Suppress all normal output                            [boolean]
       --foo      Option foo                                             [string]
       --bar      Option bar                                             [number]
   -h, --help     Show help                                             [boolean]
@@ -146,8 +136,6 @@ Options:
       --version  Show version number                                   [boolean]
   -f, --file     Specific cmru file                                     [string]
   -w, --workdir  Specific working directory                             [string]
-      --verbose  Echo command                                          [boolean]
-      --silent   Suppress all normal output                            [boolean]
       --select   Double quotes                 [string] [choices: \\"x\\", \\"y\\", \\"z\\"]
   -h, --help     Show help                                             [boolean]
 "
@@ -155,6 +143,42 @@ Options:
 
 exports[`examples - functions task7 works 2`] = `
 "{\\"options\\":{\\"select\\":\\"x\\"},\\"pos1\\":\\"dev\\",\\"pos2\\":1}
+"
+`;
+
+exports[`examples - functions task8 works 1`] = `
+"main.js task8
+
+Without param comment
+
+Options:
+      --version  Show version number                                   [boolean]
+  -f, --file     Specific cmru file                                     [string]
+  -w, --workdir  Specific working directory                             [string]
+  -h, --help     Show help                                             [boolean]
+"
+`;
+
+exports[`examples - functions task8 works 2`] = `
+"[]
+"
+`;
+
+exports[`examples - functions task9 works 1`] = `
+"main.js task9
+
+Access global argv
+
+Options:
+      --version  Show version number                                   [boolean]
+  -f, --file     Specific cmru file                                     [string]
+  -w, --workdir  Specific working directory                             [string]
+  -h, --help     Show help                                             [boolean]
+"
+`;
+
+exports[`examples - functions task9 works 2`] = `
+"[ 'task9', 'a', 'b' ]
 "
 `;
 
@@ -170,8 +194,6 @@ Options:
       --version  Show version number                                   [boolean]
   -f, --file     Specific cmru file                                     [string]
   -w, --workdir  Specific working directory                             [string]
-      --verbose  Echo command                                          [boolean]
-      --silent   Suppress all normal output                            [boolean]
       --str      String variable                     [string] [default: \\"0.1.0\\"]
       --bool     Boolean variable                     [boolean] [default: false]
       --num      Number variable                           [number] [default: 3]

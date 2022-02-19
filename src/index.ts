@@ -1,4 +1,6 @@
 import yargs, { Arguments, ArgumentsCamelCase } from "yargs";
+import { hideBin } from "yargs/helpers";
+import { fileURLToPath } from "url";
 import fs from "fs/promises";
 import { parse as parseAst } from "@babel/parser";
 import { resolve, dirname } from "path";
@@ -15,6 +17,48 @@ import { parse as parseBlockComment } from "comment-parser";
 const PATCH_ARGV_SYMBOL = "`";
 const GLOBAL_OPTIONS_KEY = "settings";
 
+/**
+ * Mount cmru on esm file.
+ * @param url - Url of esm file, e.g. `import.meta.url`
+ * @param exportArgv - Wether exports parsed argv to global
+ * @returns
+ */
+export default async function (url: string, exportArgv = true) {
+  const file = fileURLToPath(url);
+  if (file !== process.argv[1]) return;
+  polyfillESM(file);
+  const rawArgv = patchRawArgv(hideBin(process.argv));
+  let app = yargs(rawArgv)
+    .usage("Usage: $0 <cmd> [options]")
+    .help()
+    .alias("h", "help");
+  const fatal = (err: any) => {
+    console.log(err);
+    process.exit(1);
+  };
+  try {
+    const moduleExports = await import(file);
+    const yargsData = await parse(file, moduleExports);
+    app = buildYargs(app, yargsData, async (command, argv) => {
+      try {
+        revertPatchedArgv(argv);
+        updateGlobalOptions(yargsData, argv, moduleExports);
+        const params =
+          command.params.length > 0
+            ? getCommandParams(command, argv)
+            : argv._.slice(1);
+        if (exportArgv) global.argv = argv;
+        await moduleExports[command.name](...params);
+      } catch (err) {
+        fatal(err);
+      }
+    });
+  } catch (err) {
+    fatal(err);
+  }
+  app.argv;
+}
+
 export function buildYargs<T = any>(
   app: yargs.Argv<T>,
   yargsData: YargsData,
@@ -27,7 +71,7 @@ export function buildYargs<T = any>(
     app = app.option(name, meta as any);
   }
   if (yargsData.commands.length > 0) {
-    app = app.demandCommand().strictCommands();
+    app = app.demandCommand();
   }
   for (const command of yargsData.commands) {
     let commandName = command.name;

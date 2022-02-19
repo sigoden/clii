@@ -1,7 +1,7 @@
 {
   "name": "cmru",
-  "version": "1.3.1",
-  "description": "Cmru is a make-like build tool",
+  "version": "1.4.0",
+  "description": "Build a cli app just writes plain js functions.",
   "keywords": [
     "cli",
     "make",
@@ -15,6 +15,7 @@
     "url": "git+https://github.com/sigoden/cmru.git"
   },
   "bugs": "https://github.com/sigoden/cmru/issues",
+  "module": "dist/index.js",
   "exports": {
     ".": "./dist/index.js"
   },

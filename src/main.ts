@@ -10,6 +10,7 @@ import {
   revertPatchedArgv,
   updateGlobalOptions,
   getCommandParams,
+  polyfillESM,
 } from "./index";
 import fs from "fs/promises";
 
@@ -20,10 +21,6 @@ async function main() {
     .usage("Usage: $0 <cmd> [options]")
     .help()
     .alias("h", "help")
-    .parserConfiguration({
-      "parse-numbers": false,
-      "parse-positional-numbers": false,
-    })
     .option("file", {
       alias: "f",
       type: "string",
@@ -34,23 +31,17 @@ async function main() {
       type: "string",
       description: "Specific working directory",
     })
-    .option("verbose", {
-      type: "boolean",
-      describe: "Echo command",
-    })
-    .option("silent", {
-      type: "boolean",
-      describe: "Suppress all normal output",
-    })
-    .conflicts("verbose", "silent")
     .implies("workdir", "file");
+
   try {
     const file = await findCmrufile(defaultArgv);
     const workdir = getWorkdir(defaultArgv, file);
     process.chdir(workdir);
+    polyfillESM(file);
     const moduleExports = await import(file);
     const yargsData = await parse(file, moduleExports);
     app = buildYargs(app, yargsData, async (command, argv) => {
+      global.argv = argv;
       try {
         revertPatchedArgv(argv);
         updateGlobalOptions(yargsData, argv, moduleExports);

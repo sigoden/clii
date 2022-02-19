@@ -66,6 +66,18 @@ describe("examples - functions", () => {
     let result2 = await cli([...prefixs, "task7", "--select", "x", "dev", "1"]);
     expect(result2.stdout).toMatchSnapshot();
   });
+  it("task8 works", async () => {
+    let result = await cli([...prefixs, "task8", "-h"]);
+    expect(result.stdout).toMatchSnapshot();
+    let result2 = await cli([...prefixs, "task8", "a", "b"]);
+    expect(result2.stdout).toMatchSnapshot();
+  });
+  it("task9 works", async () => {
+    let result = await cli([...prefixs, "task9", "-h"]);
+    expect(result.stdout).toMatchSnapshot();
+    let result2 = await cli([...prefixs, "task9", "a", "b"]);
+    expect(result2.stdout).toMatchSnapshot();
+  });
 });
 
 describe("examples - settings", () => {

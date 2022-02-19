@@ -1,3 +1,7 @@
+import cmru from "cmru";
+
+cmru(import.meta.url);
+
 export const settings = {
   // Default port number
   port: 3000,
@@ -11,8 +15,8 @@ export async function cmd1() {
 /**
  * Another command
  * @param {Object} options
- * @param {string} options.foo - Option foo
- * @param {number} options.bar - Option bar
+ * @param {number} options.num - Num variable
+ * @param {("prod"|"dev"|"stage")} options.mode - Build mode
  * @param {string} message - Positional param
  */
 export async function cmd2(options, message) {

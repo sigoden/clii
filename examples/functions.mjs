@@ -66,3 +66,17 @@ export function task6(options, pos) {
 export function task7(options, pos1, pos2) {
   console.log(JSON.stringify({ options, pos1, pos2 }));
 }
+
+/**
+ * Without param comment
+ */
+export function task8(...args) {
+  console.log(args);
+}
+
+/**
+ * Access global argv
+ */
+export function task9() {
+  console.log(argv._);
+}
