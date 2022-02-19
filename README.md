@@ -6,20 +6,33 @@ Build cli app by writing plain js functions.
 
 - [Cmru](#cmru)
   - [Quick Start](#quick-start)
-  - [How it works](#how-it-works)
   - [Cli](#cli)
   - [License](#license)
 
 ## Quick Start
 
-1. Install cmru package.
+1. Write some js code
+
+```js
+/**
+ * Another command
+ * @param {Object} options
+ * @param {number} options.num - Num variable
+ * @param {("prod"|"dev"|"stage")} options.mode - Build mode
+ * @param {string} message - Positional param
+ */
+export async function cmd2(options, message) {
+}
+```
+
+2. Install cmru package.
 
 ```
 npm i cmru
 yarn add cmru
 ```
 
-2. Add follow content to your file.
+3. Add follow content to your file.
 
 ```js
 import cmru from "cmru";
@@ -31,10 +44,24 @@ All done.
 
 `cmru` automatically convert your file to cli app.
 
+Try it in your terminal
+```
+$ node readme.mjs cmd2 -h
+readme.mjs cmd2 <message> [options]
 
-Try [`examples/readme.mjs`](examples/readme.mjs) yourself.
+Another command
 
-## How it works
+Positionals:
+  message  Positional param                                  [string] [required]
+
+Options:
+      --port     Default port number                    [number] [default: 3000]
+      --num      Num variable                                           [number]
+      --mode     Build mode           [string] [choices: "prod", "dev", "stage"]
+
+$ node readme.mjs cmd2 --num 3 --mode prod 'hello world'
+{"options":{"num":3,"mode":"prod"},"message":"hello world"}
+```
 
 `cmru` parse your ast js module file, generate cli interface according comments and exports semantics.
 
@@ -50,43 +77,14 @@ Options:
       --port     Default port number                    [number] [default: 3000]
 ```
 
-Export function `cmd1`, `cmd2` will be parsed as subcommand.
+Export function `cmd2` will be parsed as subcommand. It's parameters will be parsed as subcommand's options.
 
 ```
 Commands:
-  readme.mjs cmd1                      A command
   readme.mjs cmd2 <message> [options]  Another command
 ```
 
-The parameters of function will be parsed as subcommand's options.
-
-```js
-/**
- * Another command
- * @param {Object} options
- * @param {number} options.num - Num variable
- * @param {("prod"|"dev"|"stage")} options.mode - Build mode
- * @param {string} message - Positional param
- */
-export async function cmd2(options, message) {
-}
-```
-
-```
-readme.mjs cmd2 <message> [options]
-
-Another command
-
-Positionals:
-  message  Positional param                                  [string] [required]
-
-Options:
-      --port     Default port number                    [number] [default: 3000]
-      --num      Num variable                                           [number]
-      --mode     Build mode           [string] [choices: "prod", "dev", "stage"]
-```
-
-**The export default function will be th default command**. your can run it's without passing any argument.
+The export default function will be th default command.
 
 ## Cli
 
@@ -126,8 +124,10 @@ export function build(mode) {
 }
 ```
 
-`cmru lint` will run lint function, `cmru build` will run build function.
-
+```
+cmru lint
+cmru build
+```
 ## License
 
 [Apache-2.0](LICENSE)
