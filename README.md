@@ -1,6 +1,6 @@
 # Clii
 
-Invoke js functions from terminal directly. Clii is the easiest way to build a cli app.
+Invoke js functions from terminal directly.
 
 ![examples/demo.mjs](https://user-images.githubusercontent.com/4012553/154807539-f8f554f5-82da-4d3b-8cc8-578cfc661535.png)
 
@@ -42,7 +42,7 @@ clii(import.meta.url);
 
 All done.
 
-`clii` automatically convert your file to cli app.
+What an easy way to build the cli app.
 
 Try it in your terminal
 ```
