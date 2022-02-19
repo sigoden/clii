@@ -1,7 +1,7 @@
 {
   "name": "clii",
   "version": "1.5.0",
-  "description": "Build cli app by writing plain js functions. Invoke these functions from cli directly.",
+  "description": "Invoke js functions from terminal directly. Clii is the easiest way to build a cli app",
   "keywords": [
     "cli",
     "yargs",

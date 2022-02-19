@@ -1,12 +1,12 @@
 # Clii
 
-Build cli app by writing plain js functions. Invoke these functions from cli directly.
+Invoke js functions from terminal directly. Clii is the easiest way to build a cli app.
 
 ![examples/demo.mjs](https://user-images.githubusercontent.com/4012553/154807539-f8f554f5-82da-4d3b-8cc8-578cfc661535.png)
 
 - [Clii](#clii)
   - [Quick Start](#quick-start)
-  - [Cli tool](#cli-tool)
+  - [Cli Tool](#cli-tool)
   - [License](#license)
 
 ## Quick Start
@@ -86,7 +86,7 @@ Commands:
 
 The export default function will be th default command.
 
-## Cli tool
+## Cli Tool
 
 ```
 Usage: clii <cmd> [options]
