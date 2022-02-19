@@ -1,6 +1,6 @@
 {
-  "name": "cmru",
-  "version": "1.4.1",
+  "name": "clii",
+  "version": "1.5.0",
   "description": "Build cli app by writing plain js functions. Invoke these functions from cli directly.",
   "keywords": [
     "cli",
@@ -10,12 +10,12 @@
   ],
   "author": "sigoden <sigoden@gmail.com>",
   "license": "MIT",
-  "homepage": "https://github.com/sigoden/cmru",
+  "homepage": "https://github.com/sigoden/clii",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sigoden/cmru.git"
+    "url": "git+https://github.com/sigoden/clii.git"
   },
-  "bugs": "https://github.com/sigoden/cmru/issues",
+  "bugs": "https://github.com/sigoden/clii/issues",
   "module": "dist/index.js",
   "exports": {
     ".": "./dist/index.js"
@@ -25,7 +25,7 @@
     "dist"
   ],
   "bin": {
-    "cmru": "dist/main.js"
+    "clii": "dist/main.js"
   },
   "scripts": {
     "lint": "eslint .",

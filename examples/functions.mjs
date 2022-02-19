@@ -1,4 +1,4 @@
-#!/usr/bin/env cmru -f
+#!/usr/bin/env clii -f
 
 /**
  * One parameter

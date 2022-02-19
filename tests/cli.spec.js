@@ -1,7 +1,7 @@
 const path = require("path");
 const exec = require("child_process").exec;
 
-describe("cmru", () => {
+describe("clii", () => {
   it("no arguments", async () => {
     let result = await cli([]);
     expect(result.stdout).toMatchSnapshot();

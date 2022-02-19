@@ -18,7 +18,7 @@ const PATCH_ARGV_SYMBOL = "`";
 const GLOBAL_OPTIONS_KEY = "settings";
 
 /**
- * Mount cmru on esm file.
+ * Mount clii on esm file.
  * @param url - Url of esm file, e.g. `import.meta.url`
  * @param exportArgv - Wether exports parsed argv to global
  * @returns

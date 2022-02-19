@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
-import cmru from "cmru";
+import clii from "clii";
 
-cmru(import.meta.url);
+clii(import.meta.url);
 
 export const settings = {
   // Default port number

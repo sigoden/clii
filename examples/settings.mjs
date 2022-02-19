@@ -1,4 +1,4 @@
-#!/usr/bin/env cmru -f
+#!/usr/bin/env clii -f
 
 export const settings = {
   // String variable

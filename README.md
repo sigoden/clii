@@ -1,12 +1,12 @@
-# Cmru
+# Clii
 
 Build cli app by writing plain js functions. Invoke these functions from cli directly.
 
-![examples/readme.mjs](https://user-images.githubusercontent.com/4012553/154787191-87252e55-35ae-4db5-99a7-13c727bdd48c.png)
+![examples/demo.mjs](https://user-images.githubusercontent.com/4012553/154807539-f8f554f5-82da-4d3b-8cc8-578cfc661535.png)
 
-- [Cmru](#cmru)
+- [Clii](#clii)
   - [Quick Start](#quick-start)
-  - [Cli](#cli)
+  - [Cli tool](#cli-tool)
   - [License](#license)
 
 ## Quick Start
@@ -25,29 +25,29 @@ export async function cmd2(options, message) {
 }
 ```
 
-2. Install cmru package.
+2. Install clii package.
 
 ```
-npm i cmru
-yarn add cmru
+npm i clii
+yarn add clii
 ```
 
 3. Add follow content to your file.
 
 ```js
-import cmru from "cmru";
+import clii from "clii";
 
-cmru(import.meta.url);
+clii(import.meta.url);
 ```
 
 All done.
 
-`cmru` automatically convert your file to cli app.
+`clii` automatically convert your file to cli app.
 
 Try it in your terminal
 ```
-$ node readme.mjs cmd2 -h
-readme.mjs cmd2 <message> [options]
+$ node demo.mjs cmd2 -h
+demo.mjs cmd2 <message> [options]
 
 Another command
 
@@ -59,11 +59,11 @@ Options:
       --num      Num variable                                           [number]
       --mode     Build mode           [string] [choices: "prod", "dev", "stage"]
 
-$ node readme.mjs cmd2 --num 3 --mode prod 'hello world'
+$ node demo.mjs cmd2 --num 3 --mode prod 'hello world'
 {"options":{"num":3,"mode":"prod"},"message":"hello world"}
 ```
 
-`cmru` parse your ast js module file, generate cli interface according comments and exports semantics.
+`clii` parse your ast js module file, generate cli interface according comments and exports semantics.
 
 Export variable `settings` will be parsed as global options.
 ```
@@ -81,32 +81,32 @@ Export function `cmd2` will be parsed as subcommand. It's parameters will be par
 
 ```
 Commands:
-  readme.mjs cmd2 <message> [options]  Another command
+  demo.mjs cmd2 <message> [options]  Another command
 ```
 
 The export default function will be th default command.
 
-## Cli
+## Cli tool
 
 ```
-Usage: cmru <cmd> [options]
+Usage: clii <cmd> [options]
 
 Options:
       --version  Show version number                                   [boolean]
-  -f, --file     Specific cmru file                                     [string]
+  -f, --file     Specific clii file                                     [string]
   -w, --workdir  Specific working directory                             [string]
   -h, --help     Show help                                             [boolean]
 ```
 
-By defualt. `cmru` looks for file `cmrufile.mjs` in the current directory and upwards, so you can invoke it from any subdirectory of your project. 
+By defualt. `clii` looks for file `cliifile.mjs` in the current directory and upwards, so you can invoke it from any subdirectory of your project. 
 
 You can specify a file with option `--file <path-to-script.mjs>`. 
 
 The workdir will be the folder contains the mjs file. Use option `---workdir <path-to-dir>` to change it.
 
-Since `cmru` can run js functions directly from cli, it can be used as task runner / build tool.
+Since `clii` can run js functions directly from cli, it can be used as task runner / build tool.
 
-For examples, Write the following to the file `cmrufile.mjs`.
+For examples, Write the following to the file `cliifile.mjs`.
 
 ```ts
 import sh from "shelljs";
@@ -123,8 +123,8 @@ export function build(mode) {
 ```
 
 ```
-cmru lint
-cmru build
+clii lint
+clii build
 ```
 ## License
 

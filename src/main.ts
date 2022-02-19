@@ -24,7 +24,7 @@ async function main() {
     .option("file", {
       alias: "f",
       type: "string",
-      description: "Specific cmru file",
+      description: "Specific clii file",
     })
     .option("workdir", {
       alias: "w",
@@ -34,7 +34,7 @@ async function main() {
     .implies("workdir", "file");
 
   try {
-    const file = await findCmrufile(defaultArgv);
+    const file = await findCliifile(defaultArgv);
     const workdir = getWorkdir(defaultArgv, file);
     process.chdir(workdir);
     polyfillESM(file);
@@ -63,7 +63,7 @@ async function main() {
 
 main();
 
-async function findCmrufile(argv: Record<string, any>) {
+async function findCliifile(argv: Record<string, any>) {
   const argFile: string = argv.file || argv.f;
   const checkFiles = [];
   if (argFile) {
@@ -71,8 +71,8 @@ async function findCmrufile(argv: Record<string, any>) {
   } else {
     let dir = process.cwd();
     while (true) {
-      checkFiles.push(resolve(dir, "cmrufile.mjs"));
-      checkFiles.push(resolve(dir, "Cmrufile.mjs"));
+      checkFiles.push(resolve(dir, "cliifile.mjs"));
+      checkFiles.push(resolve(dir, "Cliifile.mjs"));
       const parentDir = dirname(dir);
       if (parentDir === dir) {
         break;
