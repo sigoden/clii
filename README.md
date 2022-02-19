@@ -88,8 +88,6 @@ The export default function will be th default command.
 
 ## Cli
 
-`cmru` is not only a library for building cli app, but also a cli tool itself.
-
 ```
 Usage: cmru <cmd> [options]
 

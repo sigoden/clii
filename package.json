@@ -1,7 +1,7 @@
 {
   "name": "cmru",
   "version": "1.4.1",
-  "description": "Build cli app by writing plain js functions",
+  "description": "Build cli app by writing plain js functions. Invoke these functions from cli directly.",
   "keywords": [
     "cli",
     "yargs",
