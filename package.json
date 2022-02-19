@@ -16,7 +16,7 @@
   },
   "bugs": "https://github.com/sigoden/cmru/issues",
   "exports": {
-    "./globals": "./dist/globals.js"
+    ".": "./dist/index.js"
   },
   "type": "module",
   "files": [
