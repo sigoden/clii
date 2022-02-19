@@ -1,11 +1,12 @@
 {
   "name": "cmru",
   "version": "1.4.0",
-  "description": "Build a cli app just writes plain js functions.",
+  "description": "Build cli applications by automatically converting js modules",
   "keywords": [
     "cli",
+    "yargs",
     "make",
-    "command-runner"
+    "task-runner"
   ],
   "author": "sigoden <sigoden@gmail.com>",
   "license": "MIT",

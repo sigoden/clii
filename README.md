@@ -1,6 +1,6 @@
 # Cmru
 
-Automatically turn js module into cli app.
+Build cli applications by automatically converting js modules.
 
 - [Cmru](#cmru)
   - [Quick Start](#quick-start)

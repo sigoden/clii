@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import cmru from "cmru";
 
 cmru(import.meta.url);
