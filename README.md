@@ -13,28 +13,28 @@ Write some functions, jsdoc it, clii automatically turns it into a cli.
 
 ## Quick Start
 
-1. Write some js code
-
-```js
-/**
- * Another command
- * @param {Object} options
- * @param {number} options.num - Num variable
- * @param {("prod"|"dev"|"stage")} options.mode - Build mode
- * @param {string} message - Positional param
- */
-export async function cmd2(options, message) {
-}
-```
-
-2. Install clii package.
+Install clii package.
 
 ```
 npm i clii
 yarn add clii
 ```
 
-3. Add follow content to your file.
+ Write some js code
+
+```js
+/**
+ * A simple task
+ * @param {Object} options
+ * @param {number} options.num - Num variable
+ * @param {("prod"|"dev"|"stage")} options.mode - Build mode
+ */
+export async function task(options) {
+  console.log(options);
+}
+```
+
+Add follow content to your file.
 
 ```js
 import clii from "clii";
@@ -48,21 +48,19 @@ What an easy way to build the cli app.
 
 Try it in your terminal
 ```
-$ node demo.mjs cmd2 -h
-demo.mjs cmd2 <message> [options]
-
-Another command
-
-Positionals:
-  message  Positional param                                  [string] [required]
+$ node index.mjs task1 -h
+index.mjs task1 [options]
 
 Options:
-      --port     Default port number                    [number] [default: 3000]
+      --version  Show version number                                   [boolean]
+  -f, --file     Specific clii file                                     [string]
+  -w, --workdir  Specific working directory                             [string]
       --num      Num variable                                           [number]
       --mode     Build mode           [string] [choices: "prod", "dev", "stage"]
+  -h, --help     Show help                                             [boolean]
 
-$ node demo.mjs cmd2 --num 3 --mode prod 'hello world'
-{"options":{"num":3,"mode":"prod"},"message":"hello world"}
+$ node index.mjs task --num 3 --mode prod
+{ num: 3, mode: 'prod' }
 ```
 
 `clii` parse your ast js module file, generate cli interface according comments and exports semantics.
@@ -92,19 +90,39 @@ The export default function will be th default command.
 
 Since `clii` can run js functions directly from cli, it can be used as task runner / build tool.
 
+By defualt. `clii` looks for file `cliifile.mjs` in the current directory and upwards, so you can invoke it from any subdirectory of your project. 
+
+You can organize your project scripts with `cliifile.mjs` to provide unified entrypoint and help information.
+
+```js
+export function lint() {}
+/**
+ * Build
+ * @param {Object} options
+ * @param {boolean} options.prod
+ */
+export function build(options) {
+  lint();
+}
 ```
+
+```
+$ clii
 Usage: clii <cmd> [options]
+
+Commands:
+  clii lint
+  clii build [options]  Build
 
 Options:
       --version  Show version number                                   [boolean]
   -f, --file     Specific clii file                                     [string]
   -w, --workdir  Specific working directory                             [string]
   -h, --help     Show help                                             [boolean]
+
+$ clii build
+$ clii lint
 ```
-
-By defualt. `clii` looks for file `cliifile.mjs` in the current directory and upwards, so you can invoke it from any subdirectory of your project. 
-
-You can organize your project scripts with `cliifile.mjs` to provide unified entrypoint and help information.
 
 
 ## License
