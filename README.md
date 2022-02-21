@@ -1,6 +1,8 @@
 # Clii
 
-Clii allow you to invoke specific plain js function from terminal directly.
+Easily build a cli app.
+
+Write some functions, jsdoc it, clii automatically turns it into a cli.
 
 ![examples/demo.mjs](https://user-images.githubusercontent.com/4012553/154807539-f8f554f5-82da-4d3b-8cc8-578cfc661535.png)
 
@@ -88,6 +90,8 @@ The export default function will be th default command.
 
 ## Cli Tool
 
+Since `clii` can run js functions directly from cli, it can be used as task runner / build tool.
+
 ```
 Usage: clii <cmd> [options]
 
@@ -100,32 +104,9 @@ Options:
 
 By defualt. `clii` looks for file `cliifile.mjs` in the current directory and upwards, so you can invoke it from any subdirectory of your project. 
 
-You can specify a file with option `--file <path-to-script.mjs>`. 
+You can organize your project scripts with `cliifile.mjs` to provide unified entrypoint and help information.
 
-The workdir will be the folder contains the mjs file. Use option `---workdir <path-to-dir>` to change it.
 
-Since `clii` can run js functions directly from cli, it can be used as task runner / build tool.
-
-For examples, Write the following to the file `cliifile.mjs`.
-
-```ts
-import sh from "shelljs";
-
-export function lint() {}
-
-/**
- * @param {("prod"|"dev"|"stage")} mode
- */
-export function build(mode) {
-  lint();
-  sh.exec(`tsc tsconfig.${mode}.json`);
-}
-```
-
-```
-clii lint
-clii build
-```
 ## License
 
 [Apache-2.0](LICENSE)
