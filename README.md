@@ -90,7 +90,7 @@ The export default function will be th default command.
 
 Since `clii` can run js functions directly from cli, it can be used as task runner / build tool.
 
-By defualt. `clii` looks for file `cliifile.mjs` in the current directory and upwards, so you can invoke it from any subdirectory of your project. 
+By default, `clii` looks for file `cliifile.mjs` in the current directory and upwards, so you can invoke it from any subdirectory of your project. 
 
 You can organize your project scripts with `cliifile.mjs` to provide unified entrypoint and help information.
 
